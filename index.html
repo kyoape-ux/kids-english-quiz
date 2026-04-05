@@ -64,7 +64,7 @@ body{
 .home-grid{display:flex;gap:14px;width:100%;max-width:700px;justify-content:center;flex-wrap:wrap}
 .home-card{
   background:rgba(255,255,255,.93);border-radius:var(--r);padding:28px 18px 22px;
-  text-align:center;cursor:pointer;width:140px;
+  text-align:center;cursor:pointer;width:clamp(145px,36vw,175px);
   box-shadow:0 6px 0 rgba(0,0,0,.11),0 10px 24px var(--shadow);
   transition:transform .14s;-webkit-tap-highlight-color:transparent;
   border-top:6px solid transparent;display:flex;flex-direction:column;align-items:center;
@@ -104,7 +104,7 @@ body{
   transition:width .4s cubic-bezier(.34,1.56,.64,1)}
 
 /* ═══════ CATEGORY SELECT ═══════ */
-.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:420px}
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:460px}
 .cat-card{
   background:rgba(255,255,255,.92);border-radius:18px;padding:16px 10px;text-align:center;
   cursor:pointer;box-shadow:0 5px 0 rgba(0,0,0,.09),0 7px 16px var(--shadow);
@@ -169,7 +169,7 @@ body{
   font-family:'Nunito',sans-serif;font-size:clamp(.8rem,3vw,.95rem);font-weight:800;
   cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;color:var(--dark)}
 .self-tab.active{border-color:var(--coral);background:var(--coral);color:#fff}
-.self-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;
+.self-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;
   max-width:560px;width:100%}
 .self-card{background:#fff;border-radius:18px;padding:14px 8px 12px;text-align:center;
   cursor:pointer;box-shadow:0 5px 0 rgba(0,0,0,.08),0 7px 18px var(--shadow);
@@ -190,7 +190,7 @@ body{
   font-family:'Nunito',sans-serif;font-size:clamp(.78rem,2.8vw,.92rem);font-weight:800;
   cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;color:var(--dark)}
 .zy-cat-btn.active{border-color:#7B68EE;background:#7B68EE;color:#fff}
-.zy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px;
+.zy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;
   max-width:560px;width:100%}
 .zy-card{background:#fff;border-radius:18px;padding:13px 8px 11px;text-align:center;
   cursor:pointer;box-shadow:0 5px 0 rgba(0,0,0,.08),0 7px 18px var(--shadow);
@@ -222,7 +222,7 @@ body{
 .modal-close:active{transform:translateY(3px);box-shadow:0 2px 0 #C0392B}
 
 /* ═══════ ABC 字母 ═══════ */
-.abc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:11px;
+.abc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:11px;
   max-width:600px;width:100%}
 .abc-card{background:#fff;border-radius:20px;padding:13px 8px 11px;text-align:center;
   cursor:pointer;box-shadow:0 5px 0 rgba(0,0,0,.08),0 9px 22px var(--shadow);
@@ -359,6 +359,25 @@ body{
 .splash-emoji{font-size:5rem;animation:bounce-row 1s ease-in-out infinite alternate;margin-bottom:14px}
 .splash-title{font-family:'Fredoka One',cursive;font-size:2.5rem;color:#fff;text-shadow:0 4px 0 #6B8FD4}
 .splash-sub{color:rgba(255,255,255,.8);font-weight:800;margin-top:8px}
+
+/* ═══════ 認識詞彙 ═══════ */
+.vl-tabs{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;max-width:560px;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.vl-tab{background:#fff;border:3px solid #ddd;border-radius:50px;padding:7px 16px;
+  font-family:'Nunito',sans-serif;font-size:clamp(.75rem,2.8vw,.9rem);font-weight:800;
+  cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;color:var(--dark)}
+.vl-tab.active{border-color:#E91E8C;background:#E91E8C;color:#fff}
+.vl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:11px;
+  max-width:600px;width:100%}
+.vl-card{background:#fff;border-radius:18px;padding:14px 8px 12px;text-align:center;
+  cursor:pointer;box-shadow:0 5px 0 rgba(0,0,0,.08),0 7px 18px var(--shadow);
+  transition:transform .15s;border:3px solid transparent;-webkit-tap-highlight-color:transparent}
+.vl-card:hover{transform:translateY(-3px)}
+.vl-card:active{transform:scale(.94)}
+.vl-card.playing{border-color:#E91E8C;background:#FFF0F7;animation:cpop .4s ease}
+.vl-emoji{font-size:clamp(2.2rem,9vw,3rem);display:block;margin-bottom:4px}
+.vl-zh{font-family:'Fredoka One',cursive;font-size:clamp(.82rem,3.2vw,1rem);color:var(--dark);font-weight:900}
+.vl-zy{font-size:clamp(.62rem,2.2vw,.76rem);color:#7B68EE;font-weight:800;margin-top:2px}
+.vl-en{font-size:clamp(.6rem,2vw,.72rem);color:#aaa;font-weight:700;margin-top:2px;text-transform:uppercase}
 </style>
 </head>
 <body>
@@ -379,6 +398,18 @@ body{
   <div class="sp-row" style="flex-direction:column;align-items:flex-start;gap:5px">
     <span class="sp-label">🗣️ 英文發音聲音</span>
     <select class="voice-select" id="voice-select" onchange="updateVoice(this)"><option value="-1">🎙️ 系統預設</option></select>
+  </div>
+  <div class="sp-row" style="flex-direction:column;align-items:flex-start;gap:5px">
+    <span class="sp-label">👶 孩子的名字</span>
+    <input id="child-name" type="text" placeholder="例：陳宥穎"
+      style="width:100%;padding:8px 12px;border:2px solid #eee;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700"
+      oninput="localStorage.setItem('childName',this.value);buildSelfIntro()">
+  </div>
+  <div class="sp-row">
+    <span class="sp-label">🎂 孩子的年齡</span>
+    <input id="child-age" type="number" min="1" max="12" placeholder="4"
+      style="width:80px;padding:8px 12px;border:2px solid #eee;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;text-align:center"
+      oninput="localStorage.setItem('childAge',this.value);buildSelfIntro()">
   </div>
   <div class="sp-row"><span class="sp-label">📝 詞彙管理（家長）</span>
     <button style="background:var(--orange);color:#fff;border:none;border-radius:10px;padding:6px 14px;font-weight:800;font-size:.82rem;cursor:pointer" onclick="closeSettings();showScreen('s-vocab');vmInit()">開啟</button></div>
@@ -418,6 +449,11 @@ body{
       <div class="hc-name">ABC 字母</div>
       <div class="hc-desc">26 字母＋例字</div>
     </div>
+    <div class="home-card" style="border-top-color:#E91E8C" onclick="showScreen('s-vl');vlInit('animals')">
+      <span class="hc-icon">📖</span>
+      <div class="hc-name">認識詞彙</div>
+      <div class="hc-desc">13 大主題分類</div>
+    </div>
   </div>
 </section>
 
@@ -430,8 +466,17 @@ body{
     <button class="self-tab" onclick="filterSelf('情緒',this)">😊 情緒</button>
     <button class="self-tab" onclick="filterSelf('家人',this)">👨‍👩‍👧 家人</button>
     <button class="self-tab" onclick="filterSelf('all',this)">全部</button>
+    <button class="self-tab" onclick="filterSelf('自介',this)">🙋 自我介紹</button>
   </div>
   <div class="self-grid" id="self-grid"></div>
+</section>
+
+<!-- ═══════ 認識詞彙 ═══════ -->
+<section class="screen" id="s-vl">
+  <button class="back-btn" onclick="showScreen('s-home')">🏠 回主頁</button>
+  <div class="sec-title">📖 認識詞彙</div>
+  <div class="vl-tabs" id="vl-tabs"></div>
+  <div class="vl-grid" id="vl-grid"></div>
 </section>
 
 <!-- ═══════ CATEGORY ═══════ -->
@@ -571,8 +616,8 @@ function sfxWin(){if(!sfxOn)return;const c=getCtx();if(!c)return;const n=c.curre
 /* ══════════════════════════════════════════
    VOICE SELECTION
 ══════════════════════════════════════════ */
-let voiceList=[],chosenVoice=null;
-function loadVoices(){if(!window.speechSynthesis)return;const u=()=>{voiceList=speechSynthesis.getVoices().filter(v=>v.lang.startsWith('en'));renderVoiceSel()};speechSynthesis.onvoiceschanged=u;u()}
+let voiceList=[],chosenVoice=null,zhVoice=null;
+function loadVoices(){if(!window.speechSynthesis)return;const u=()=>{const all=speechSynthesis.getVoices();voiceList=all.filter(v=>v.lang.startsWith('en'));renderVoiceSel();const zhAll=all.filter(v=>v.lang.startsWith('zh'));zhVoice=zhAll.find(v=>/Meijia|美佳/.test(v.name))||zhAll.find(v=>/Hanhan/.test(v.name))||zhAll.find(v=>v.lang==='zh-TW')||zhAll.find(v=>v.lang.startsWith('zh'))||null};speechSynthesis.onvoiceschanged=u;u()}
 function renderVoiceSel(){const s=document.getElementById('voice-select');if(!s)return;s.innerHTML='<option value="-1">🎙️ 系統預設</option>';voiceList.forEach((v,i)=>{const f=/female|samantha|karen|moira|victoria|ava|susan|lisa|kate|fiona|veena|zira|hazel|linda|zoe|heather/i.test(v.name);const o=document.createElement('option');o.value=i;o.textContent=`${f?'👩':'👨'} ${v.name} (${v.lang})`;s.appendChild(o)})}
 function updateVoice(sel){const i=parseInt(sel.value);chosenVoice=i>=0?voiceList[i]:null}
 function speak(word,cb){if(!window.speechSynthesis){cb&&cb();return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(word);if(chosenVoice)u.voice=chosenVoice;u.lang='en-US';u.rate=.82;u.pitch=1.05;if(cb)u.onend=cb;speechSynthesis.speak(u)}
@@ -580,7 +625,9 @@ function speak(word,cb){if(!window.speechSynthesis){cb&&cb();return}speechSynthe
 function speakZHQueue(segments,idx){
   idx=idx||0;if(idx>=segments.length||!window.speechSynthesis)return;
   if(idx===0)speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(segments[idx]);u.lang='zh-TW';u.rate=.75;u.pitch=1.1;
+  const u=new SpeechSynthesisUtterance(segments[idx]);
+  if(zhVoice)u.voice=zhVoice;
+  u.lang='zh-TW';u.rate=.75;u.pitch=1.1;
   u.onend=()=>setTimeout(()=>speakZHQueue(segments,idx+1),200);
   speechSynthesis.speak(u);
 }
@@ -746,6 +793,187 @@ const ABC=[
 const PRAISE_OK=['太棒了！🎉','答對了！🌟','好厲害！✨','完美！💯','正確！🎊','你真棒！⭐'];
 const PRAISE_NO=['再試試看！','加油！💪','想一想～🤔','不對喔，再來！'];
 
+/* ═══════════════════════════════════════
+   VL_CATS — 認識詞彙（瀏覽模式）
+═══════════════════════════════════════ */
+const VL_CATS=[
+  {id:'animals',name:'動物',icon:'🐾',color:'#6BCB77',items:[
+    {w:'DOG',z:'小狗',zy:'ㄒㄧㄠˇ ㄍㄡˇ',e:'🐶'},
+    {w:'CAT',z:'小貓',zy:'ㄒㄧㄠˇ ㄇㄠ',e:'🐱'},
+    {w:'FISH',z:'小魚',zy:'ㄒㄧㄠˇ ㄩˊ',e:'🐟'},
+    {w:'RABBIT',z:'兔子',zy:'ㄊㄨˋ ㄗ˙',e:'🐰'},
+    {w:'BIRD',z:'小鳥',zy:'ㄒㄧㄠˇ ㄋㄧㄠˇ',e:'🐦'},
+    {w:'BEAR',z:'小熊',zy:'ㄒㄧㄠˇ ㄒㄩㄥˊ',e:'🐻'},
+    {w:'ELEPHANT',z:'大象',zy:'ㄉㄚˋ ㄒㄧㄤˋ',e:'🐘'},
+    {w:'TIGER',z:'老虎',zy:'ㄌㄠˇ ㄏㄨˇ',e:'🐯'},
+    {w:'LION',z:'獅子',zy:'ㄕ ㄗ˙',e:'🦁'},
+    {w:'MONKEY',z:'猴子',zy:'ㄏㄡˊ ㄗ˙',e:'🐵'},
+    {w:'DUCK',z:'鴨子',zy:'ㄧㄚ ㄗ˙',e:'🦆'},
+    {w:'PIG',z:'小豬',zy:'ㄒㄧㄠˇ ㄓㄨ',e:'🐷'},
+    {w:'COW',z:'乳牛',zy:'ㄖㄨˇ ㄋㄧㄡˊ',e:'🐮'},
+    {w:'SHEEP',z:'小羊',zy:'ㄒㄧㄠˇ ㄧㄤˊ',e:'🐑'},
+    {w:'HORSE',z:'馬兒',zy:'ㄇㄚˇ ㄦˊ',e:'🐴'},
+  ]},
+  {id:'vehicles',name:'交通工具',icon:'🚗',color:'#4A7CC7',items:[
+    {w:'CAR',z:'汽車',zy:'ㄑㄧˋ ㄔㄜ',e:'🚗'},
+    {w:'BUS',z:'公車',zy:'ㄍㄨㄥ ㄔㄜ',e:'🚌'},
+    {w:'TRAIN',z:'火車',zy:'ㄏㄨㄛˇ ㄔㄜ',e:'🚂'},
+    {w:'PLANE',z:'飛機',zy:'ㄈㄟ ㄐㄧ',e:'✈️'},
+    {w:'BIKE',z:'腳踏車',zy:'ㄐㄧㄠˇ ㄊㄚˋ ㄔㄜ',e:'🚲'},
+    {w:'BOAT',z:'帆船',zy:'ㄈㄢˊ ㄔㄨㄢˊ',e:'⛵'},
+    {w:'TRUCK',z:'卡車',zy:'ㄎㄚˇ ㄔㄜ',e:'🚛'},
+    {w:'TAXI',z:'計程車',zy:'ㄐㄧˋ ㄔㄥˊ ㄔㄜ',e:'🚕'},
+    {w:'ROCKET',z:'火箭',zy:'ㄏㄨㄛˇ ㄐㄧㄢˋ',e:'🚀'},
+    {w:'AMBULANCE',z:'救護車',zy:'ㄐㄧㄡˋ ㄏㄨˋ ㄔㄜ',e:'🚑'},
+    {w:'FIRE TRUCK',z:'消防車',zy:'ㄒㄧㄠ ㄈㄤˊ ㄔㄜ',e:'🚒'},
+    {w:'POLICE CAR',z:'警車',zy:'ㄐㄧㄥˇ ㄔㄜ',e:'🚓'},
+  ]},
+  {id:'colors',name:'顏色',icon:'🎨',color:'#C77DFF',items:[
+    {w:'RED',z:'紅色',zy:'ㄏㄨㄥˊ ㄙㄜˋ',e:'🔴'},
+    {w:'BLUE',z:'藍色',zy:'ㄌㄢˊ ㄙㄜˋ',e:'🔵'},
+    {w:'GREEN',z:'綠色',zy:'ㄌㄩˋ ㄙㄜˋ',e:'🟢'},
+    {w:'YELLOW',z:'黃色',zy:'ㄏㄨㄤˊ ㄙㄜˋ',e:'🟡'},
+    {w:'PINK',z:'粉色',zy:'ㄈㄣˇ ㄙㄜˋ',e:'🩷'},
+    {w:'PURPLE',z:'紫色',zy:'ㄗˇ ㄙㄜˋ',e:'🟣'},
+    {w:'ORANGE',z:'橘色',zy:'ㄐㄩˊ ㄙㄜˋ',e:'🟠'},
+    {w:'WHITE',z:'白色',zy:'ㄅㄞˊ ㄙㄜˋ',e:'⬜'},
+    {w:'BLACK',z:'黑色',zy:'ㄏㄟ ㄙㄜˋ',e:'⬛'},
+    {w:'BROWN',z:'棕色',zy:'ㄗㄨㄥ ㄙㄜˋ',e:'🟫'},
+    {w:'GOLD',z:'金色',zy:'ㄐㄧㄣ ㄙㄜˋ',e:'🏅'},
+    {w:'SILVER',z:'銀色',zy:'ㄧㄣˊ ㄙㄜˋ',e:'🥈'},
+  ]},
+  {id:'shapes',name:'形狀',icon:'🔷',color:'#FF9A3C',items:[
+    {w:'CIRCLE',z:'圓形',zy:'ㄩㄢˊ ㄒㄧㄥˊ',e:'⭕'},
+    {w:'SQUARE',z:'正方形',zy:'ㄓㄥˋ ㄈㄤ ㄒㄧㄥˊ',e:'🟥'},
+    {w:'TRIANGLE',z:'三角形',zy:'ㄙㄢ ㄐㄧㄠˇ ㄒㄧㄥˊ',e:'🔺'},
+    {w:'STAR',z:'星形',zy:'ㄒㄧㄥ ㄒㄧㄥˊ',e:'⭐'},
+    {w:'HEART',z:'心形',zy:'ㄒㄧㄣ ㄒㄧㄥˊ',e:'❤️'},
+    {w:'DIAMOND',z:'菱形',zy:'ㄌㄧㄥˊ ㄒㄧㄥˊ',e:'💎'},
+    {w:'OVAL',z:'橢圓形',zy:'ㄊㄨㄛˇ ㄩㄢˊ ㄒㄧㄥˊ',e:'🥚'},
+    {w:'MOON',z:'月形',zy:'ㄩㄝˋ ㄒㄧㄥˊ',e:'🌙'},
+  ]},
+  {id:'drinks',name:'常見飲品',icon:'🥤',color:'#00BCD4',items:[
+    {w:'WATER',z:'水',zy:'ㄕㄨㄟˇ',e:'💧'},
+    {w:'MILK',z:'牛奶',zy:'ㄋㄧㄡˊ ㄋㄞˇ',e:'🥛'},
+    {w:'JUICE',z:'果汁',zy:'ㄍㄨㄛˇ ㄓ',e:'🧃'},
+    {w:'TEA',z:'茶',zy:'ㄔㄚˊ',e:'🍵'},
+    {w:'SODA',z:'汽水',zy:'ㄑㄧˋ ㄕㄨㄟˇ',e:'🥤'},
+    {w:'COFFEE',z:'咖啡',zy:'ㄎㄚ ㄈㄟ',e:'☕'},
+    {w:'SOUP',z:'湯',zy:'ㄊㄤ',e:'🍲'},
+    {w:'HOT COCOA',z:'熱可可',zy:'ㄖㄜˋ ㄎㄜˇ ㄎㄜˇ',e:'🍫'},
+    {w:'LEMONADE',z:'檸檬水',zy:'ㄋㄧㄥˊ ㄇㄥˊ ㄕㄨㄟˇ',e:'🍋'},
+    {w:'YOGURT',z:'優格',zy:'ㄧㄡ ㄍㄜˊ',e:'🫙'},
+  ]},
+  {id:'food',name:'常見食物',icon:'🍎',color:'#E05555',items:[
+    {w:'APPLE',z:'蘋果',zy:'ㄆㄧㄥˊ ㄍㄨㄛˇ',e:'🍎'},
+    {w:'CAKE',z:'蛋糕',zy:'ㄉㄢˋ ㄍㄠ',e:'🎂'},
+    {w:'BREAD',z:'麵包',zy:'ㄇㄧㄢˋ ㄅㄠ',e:'🍞'},
+    {w:'EGG',z:'雞蛋',zy:'ㄐㄧ ㄉㄢˋ',e:'🥚'},
+    {w:'RICE',z:'米飯',zy:'ㄇㄧˇ ㄈㄢˋ',e:'🍚'},
+    {w:'NOODLE',z:'麵條',zy:'ㄇㄧㄢˋ ㄊㄧㄠˊ',e:'🍜'},
+    {w:'PIZZA',z:'披薩',zy:'ㄆㄧ ㄙㄚˋ',e:'🍕'},
+    {w:'BURGER',z:'漢堡',zy:'ㄏㄢˋ ㄅㄠˇ',e:'🍔'},
+    {w:'COOKIE',z:'餅乾',zy:'ㄅㄧㄥˇ ㄍㄢ',e:'🍪'},
+    {w:'SUSHI',z:'壽司',zy:'ㄕㄡˋ ㄙ',e:'🍣'},
+    {w:'ICE CREAM',z:'冰淇淋',zy:'ㄅㄧㄥ ㄑㄧˊ ㄌㄧㄣˊ',e:'🍦'},
+    {w:'CHEESE',z:'起司',zy:'ㄑㄧˇ ㄙ',e:'🧀'},
+  ]},
+  {id:'household',name:'日用品',icon:'🏠',color:'#FF6B6B',items:[
+    {w:'BOOK',z:'書',zy:'ㄕㄨ',e:'📚'},
+    {w:'CUP',z:'杯子',zy:'ㄅㄟ ㄗ˙',e:'☕'},
+    {w:'CHAIR',z:'椅子',zy:'ㄧˇ ㄗ˙',e:'🪑'},
+    {w:'CLOCK',z:'時鐘',zy:'ㄕˊ ㄓㄨㄥ',e:'⏰'},
+    {w:'PHONE',z:'手機',zy:'ㄕㄡˇ ㄐㄧ',e:'📱'},
+    {w:'BAG',z:'書包',zy:'ㄕㄨ ㄅㄠ',e:'🎒'},
+    {w:'KEY',z:'鑰匙',zy:'ㄧㄠˋ ㄕ˙',e:'🔑'},
+    {w:'LAMP',z:'燈',zy:'ㄉㄥ',e:'💡'},
+    {w:'SCISSORS',z:'剪刀',zy:'ㄐㄧㄢˇ ㄉㄠ',e:'✂️'},
+    {w:'UMBRELLA',z:'雨傘',zy:'ㄩˇ ㄙㄢˇ',e:'☂️'},
+    {w:'HAT',z:'帽子',zy:'ㄇㄠˋ ㄗ˙',e:'🧢'},
+    {w:'TOOTHBRUSH',z:'牙刷',zy:'ㄧㄚˊ ㄕㄨㄚ',e:'🪥'},
+  ]},
+  {id:'appliances',name:'家電',icon:'📺',color:'#5C6BC0',items:[
+    {w:'TV',z:'電視',zy:'ㄉㄧㄢˋ ㄕˋ',e:'📺'},
+    {w:'FRIDGE',z:'冰箱',zy:'ㄅㄧㄥ ㄒㄧㄤ',e:'🧊'},
+    {w:'WASHER',z:'洗衣機',zy:'ㄒㄧˇ ㄧ ㄐㄧ',e:'🫧'},
+    {w:'AC',z:'冷氣',zy:'ㄌㄥˇ ㄑㄧˋ',e:'❄️'},
+    {w:'FAN',z:'電風扇',zy:'ㄉㄧㄢˋ ㄈㄥ ㄕㄢˋ',e:'🌀'},
+    {w:'MICROWAVE',z:'微波爐',zy:'ㄨㄟˊ ㄅㄛ ㄌㄨˊ',e:'📦'},
+    {w:'COMPUTER',z:'電腦',zy:'ㄉㄧㄢˋ ㄋㄠˇ',e:'💻'},
+    {w:'VACUUM',z:'吸塵器',zy:'ㄒㄧ ㄔㄣˊ ㄑㄧˋ',e:'🌪️'},
+    {w:'RICE COOKER',z:'電鍋',zy:'ㄉㄧㄢˋ ㄍㄨㄛ',e:'🍚'},
+    {w:'CAMERA',z:'相機',zy:'ㄒㄧㄤˋ ㄐㄧ',e:'📷'},
+  ]},
+  {id:'jobs',name:'職業',icon:'👩‍⚕️',color:'#FF80AB',items:[
+    {w:'DOCTOR',z:'醫生',zy:'ㄧ ㄕㄥ',e:'👨‍⚕️'},
+    {w:'TEACHER',z:'老師',zy:'ㄌㄠˇ ㄕ',e:'👩‍🏫'},
+    {w:'POLICE',z:'警察',zy:'ㄐㄧㄥˇ ㄔㄚˊ',e:'👮'},
+    {w:'FIREFIGHTER',z:'消防員',zy:'ㄒㄧㄠ ㄈㄤˊ ㄩㄢˊ',e:'👨‍🚒'},
+    {w:'CHEF',z:'廚師',zy:'ㄔㄨˊ ㄕ',e:'👨‍🍳'},
+    {w:'NURSE',z:'護士',zy:'ㄏㄨˋ ㄕˋ',e:'👩‍⚕️'},
+    {w:'PILOT',z:'飛行員',zy:'ㄈㄟ ㄒㄧㄥˊ ㄩㄢˊ',e:'👨‍✈️'},
+    {w:'FARMER',z:'農夫',zy:'ㄋㄨㄥˊ ㄈㄨ',e:'👨‍🌾'},
+    {w:'SINGER',z:'歌手',zy:'ㄍㄜ ㄕㄡˇ',e:'🎤'},
+    {w:'ARTIST',z:'畫家',zy:'ㄏㄨㄚˋ ㄐㄧㄚ',e:'🎨'},
+    {w:'DRIVER',z:'司機',zy:'ㄙ ㄐㄧ',e:'🚗'},
+    {w:'ENGINEER',z:'工程師',zy:'ㄍㄨㄥ ㄔㄥˊ ㄕ',e:'👷'},
+  ]},
+  {id:'fruits',name:'水果',icon:'🍎',color:'#FF7043',items:[
+    {w:'APPLE',z:'蘋果',zy:'ㄆㄧㄥˊ ㄍㄨㄛˇ',e:'🍎'},
+    {w:'BANANA',z:'香蕉',zy:'ㄒㄧㄤ ㄐㄧㄠ',e:'🍌'},
+    {w:'ORANGE',z:'柳橙',zy:'ㄌㄧㄡˇ ㄔㄥˊ',e:'🍊'},
+    {w:'GRAPE',z:'葡萄',zy:'ㄆㄨˊ ㄊㄠˊ',e:'🍇'},
+    {w:'WATERMELON',z:'西瓜',zy:'ㄒㄧ ㄍㄨㄚ',e:'🍉'},
+    {w:'STRAWBERRY',z:'草莓',zy:'ㄘㄠˇ ㄇㄟˊ',e:'🍓'},
+    {w:'MANGO',z:'芒果',zy:'ㄇㄤˊ ㄍㄨㄛˇ',e:'🥭'},
+    {w:'PEACH',z:'水蜜桃',zy:'ㄕㄨㄟˇ ㄇㄧˋ ㄊㄠˊ',e:'🍑'},
+    {w:'PINEAPPLE',z:'鳳梨',zy:'ㄈㄥˋ ㄌㄧˊ',e:'🍍'},
+    {w:'CHERRY',z:'櫻桃',zy:'ㄧㄥ ㄊㄠˊ',e:'🍒'},
+    {w:'LEMON',z:'檸檬',zy:'ㄋㄧㄥˊ ㄇㄥˊ',e:'🍋'},
+    {w:'KIWI',z:'奇異果',zy:'ㄑㄧˊ ㄧˋ ㄍㄨㄛˇ',e:'🥝'},
+  ]},
+  {id:'vegetables',name:'蔬菜',icon:'🥦',color:'#43A047',items:[
+    {w:'CARROT',z:'紅蘿蔔',zy:'ㄏㄨㄥˊ ㄌㄨㄛˊ ㄅㄛ˙',e:'🥕'},
+    {w:'CORN',z:'玉米',zy:'ㄩˋ ㄇㄧˇ',e:'🌽'},
+    {w:'BROCCOLI',z:'花椰菜',zy:'ㄏㄨㄚ ㄧㄝ ㄘㄞˋ',e:'🥦'},
+    {w:'TOMATO',z:'番茄',zy:'ㄈㄢ ㄑㄧㄝˊ',e:'🍅'},
+    {w:'POTATO',z:'馬鈴薯',zy:'ㄇㄚˇ ㄌㄧㄥˊ ㄕㄨˇ',e:'🥔'},
+    {w:'ONION',z:'洋蔥',zy:'ㄧㄤˊ ㄘㄨㄥ',e:'🧅'},
+    {w:'CABBAGE',z:'高麗菜',zy:'ㄍㄠ ㄌㄧˋ ㄘㄞˋ',e:'🥬'},
+    {w:'MUSHROOM',z:'香菇',zy:'ㄒㄧㄤ ㄍㄨ',e:'🍄'},
+    {w:'EGGPLANT',z:'茄子',zy:'ㄑㄧㄝˊ ㄗ˙',e:'🍆'},
+    {w:'CUCUMBER',z:'小黃瓜',zy:'ㄒㄧㄠˇ ㄏㄨㄤˊ ㄍㄨㄚ',e:'🥒'},
+    {w:'GARLIC',z:'大蒜',zy:'ㄉㄚˋ ㄙㄨㄢˋ',e:'🧄'},
+    {w:'SWEET POTATO',z:'地瓜',zy:'ㄉㄧˋ ㄍㄨㄚ',e:'🍠'},
+  ]},
+  {id:'plants',name:'植物',icon:'🌿',color:'#2E7D32',items:[
+    {w:'TREE',z:'大樹',zy:'ㄉㄚˋ ㄕㄨˋ',e:'🌳'},
+    {w:'FLOWER',z:'花朵',zy:'ㄏㄨㄚ ㄉㄨㄛˇ',e:'🌸'},
+    {w:'GRASS',z:'草地',zy:'ㄘㄠˇ ㄉㄧˋ',e:'🌿'},
+    {w:'ROSE',z:'玫瑰',zy:'ㄇㄟˊ ㄍㄨㄟ',e:'🌹'},
+    {w:'SUNFLOWER',z:'向日葵',zy:'ㄒㄧㄤˋ ㄖˋ ㄎㄨˊ',e:'🌻'},
+    {w:'CACTUS',z:'仙人掌',zy:'ㄒㄧㄢ ㄖㄣˊ ㄓㄤˇ',e:'🌵'},
+    {w:'BAMBOO',z:'竹子',zy:'ㄓㄨˊ ㄗ˙',e:'🎋'},
+    {w:'TULIP',z:'鬱金香',zy:'ㄩˋ ㄐㄧㄣ ㄒㄧㄤ',e:'🌷'},
+    {w:'MUSHROOM',z:'蘑菇',zy:'ㄇㄛˊ ㄍㄨ',e:'🍄'},
+    {w:'MAPLE LEAF',z:'楓葉',zy:'ㄈㄥ ㄧㄝˋ',e:'🍁'},
+  ]},
+  {id:'routine',name:'生活作息',icon:'⏰',color:'#FF9A3C',items:[
+    {w:'WAKE UP',z:'起床',zy:'ㄑㄧˇ ㄔㄨㄤˊ',e:'🌅'},
+    {w:'BRUSH TEETH',z:'刷牙',zy:'ㄕㄨㄚ ㄧㄚˊ',e:'🪥'},
+    {w:'WASH FACE',z:'洗臉',zy:'ㄒㄧˇ ㄌㄧㄢˇ',e:'🚿'},
+    {w:'BREAKFAST',z:'早餐',zy:'ㄗㄠˇ ㄘㄢ',e:'🍳'},
+    {w:'GO TO SCHOOL',z:'上學',zy:'ㄕㄤˋ ㄒㄩㄝˊ',e:'🏫'},
+    {w:'STUDY',z:'讀書',zy:'ㄉㄨˊ ㄕㄨ',e:'📚'},
+    {w:'LUNCH',z:'午餐',zy:'ㄨˇ ㄘㄢ',e:'🍱'},
+    {w:'PLAY',z:'玩耍',zy:'ㄨㄢˊ ㄕㄨㄚˇ',e:'🎮'},
+    {w:'DINNER',z:'晚餐',zy:'ㄨㄢˇ ㄘㄢ',e:'🍽️'},
+    {w:'TAKE BATH',z:'洗澡',zy:'ㄒㄧˇ ㄗㄠˇ',e:'🛁'},
+    {w:'READ',z:'看書',zy:'ㄎㄢˋ ㄕㄨ',e:'📖'},
+    {w:'SLEEP',z:'睡覺',zy:'ㄕㄨㄟˋ ㄐㄧㄠˋ',e:'😴'},
+  ]},
+];
+
 /* ══════════════════════════════════════════
    STATE
 ══════════════════════════════════════════ */
@@ -819,7 +1047,9 @@ function updateQuizUI(){document.getElementById('q-score').textContent=`⭐ ${G.
    認識自己
 ══════════════════════════════════════════ */
 function buildSelf(filter){
-  filter=filter||'身體';const g=document.getElementById('self-grid');g.innerHTML='';
+  filter=filter||'身體';
+  if(filter==='自介'){buildSelfIntro();return;}
+  const g=document.getElementById('self-grid');g.innerHTML='';
   const list=filter==='all'?SELF.flatMap(s=>s.items):SELF.find(s=>s.cat===filter)?.items||[];
   list.forEach(it=>{const c=document.createElement('div');c.className='self-card';
     c.innerHTML=`<span class="self-emoji">${it.e}</span><div class="self-en">${it.w}</div><div class="self-zh">${it.z}</div>`;
@@ -834,7 +1064,7 @@ function openSelf(it,card){
   document.getElementById('self-m-en').textContent=it.w;
   document.getElementById('self-modal').classList.add('show');
   card.classList.add('playing');setTimeout(()=>card.classList.remove('playing'),500);
-  speakSelfCurrent();
+  setTimeout(()=>speakSelfCurrent(),1000);
 }
 function closeSelfModal(){document.getElementById('self-modal').classList.remove('show')}
 function speakSelfCurrent(){
@@ -864,7 +1094,7 @@ function openZy(z,card){
   document.getElementById('zy-m-zy').textContent=z.zy;
   document.getElementById('zy-modal').classList.add('show');
   card.classList.add('playing');setTimeout(()=>card.classList.remove('playing'),500);
-  speakZyCurrent();
+  setTimeout(()=>speakZyCurrent(),1000);
 }
 function closeZyModal(){document.getElementById('zy-modal').classList.remove('show')}
 /* 核心：先唸注音符號 → 再唸注音讀法 → 再唸詞彙 */
@@ -885,7 +1115,7 @@ function buildABC(){const g=document.getElementById('abc-grid');g.innerHTML='';
 function openAbc(a,card,col){curAbc=a;document.getElementById('abc-m-up').textContent=a.L;document.getElementById('abc-m-up').style.color=col;
   document.getElementById('abc-m-dn').textContent=a.L.toLowerCase();document.getElementById('abc-m-emoji').textContent=a.emoji;
   document.getElementById('abc-m-word').textContent=a.word;document.getElementById('abc-m-zh').textContent=a.zh;
-  document.getElementById('abc-modal').classList.add('show');card.classList.add('playing');setTimeout(()=>card.classList.remove('playing'),500);speak(a.L+'... '+a.word)}
+  document.getElementById('abc-modal').classList.add('show');card.classList.add('playing');setTimeout(()=>card.classList.remove('playing'),500);setTimeout(()=>speak(a.L+'... '+a.word),1000)}
 function closeAbcModal(){document.getElementById('abc-modal').classList.remove('show')}
 function speakAbc(){if(curAbc)speak(curAbc.L+'... '+curAbc.word)}
 
@@ -978,10 +1208,93 @@ function vmReset(){
 }
 
 /* ══════════════════════════════════════════
+   認識詞彙 — 瀏覽模式
+══════════════════════════════════════════ */
+let vlCurCat='animals';
+function vlInit(catId){
+  vlCurCat=catId||'animals';
+  const tabs=document.getElementById('vl-tabs');
+  tabs.innerHTML='';
+  VL_CATS.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='vl-tab'+(c.id===vlCurCat?' active':'');
+    b.textContent=`${c.icon} ${c.name}`;
+    b.onclick=()=>vlInit(c.id);
+    tabs.appendChild(b);
+  });
+  vlRenderGrid();
+}
+function vlRenderGrid(){
+  const g=document.getElementById('vl-grid');
+  g.innerHTML='';
+  const cat=VL_CATS.find(c=>c.id===vlCurCat);
+  if(!cat)return;
+  cat.items.forEach(it=>{
+    const d=document.createElement('div');
+    d.className='vl-card';
+    d.innerHTML=`<span class="vl-emoji">${it.e}</span><div class="vl-zh">${it.z}</div><div class="vl-zy">${it.zy}</div><div class="vl-en">${it.w}</div>`;
+    d.addEventListener('click',()=>{
+      document.querySelectorAll('.vl-card').forEach(c=>c.classList.remove('playing'));
+      d.classList.add('playing');
+      setTimeout(()=>d.classList.remove('playing'),600);
+      setTimeout(()=>{
+        speakZHQueue([it.z,it.zy],0);
+        setTimeout(()=>speak(it.w),2000);
+      },1000);
+    });
+    g.appendChild(d);
+  });
+}
+
+/* ══════════════════════════════════════════
+   自我介紹
+══════════════════════════════════════════ */
+const SELF_INTRO_TPL=[
+  {e:'🙋',z:'我叫{name}',en:'My name is {name}',zy:'ㄨㄛˇ ㄐㄧㄠˋ'},
+  {e:'🎂',z:'我今年{age}歲',en:'I am {age} years old',zy:'ㄨㄛˇ ㄐㄧㄣ ㄋㄧㄢˊ ㄙㄨㄟˋ'},
+  {e:'👦',z:'我是小朋友',en:'I am a kid',zy:'ㄨㄛˇ ㄕˋ ㄒㄧㄠˇ ㄆㄥˊ ㄧㄡˇ'},
+  {e:'🏠',z:'我住在台灣',en:'I live in Taiwan',zy:'ㄨㄛˇ ㄓㄨˋ ㄗㄞˋ ㄊㄞˊ ㄨㄢ'},
+  {e:'❤️',z:'我喜歡學習',en:'I love learning',zy:'ㄨㄛˇ ㄒㄧˇ ㄏㄨㄢ ㄒㄩㄝˊ ㄒㄧˊ'},
+  {e:'🎮',z:'我喜歡玩遊戲',en:'I like playing games',zy:'ㄨㄛˇ ㄒㄧˇ ㄏㄨㄢ ㄨㄢˊ ㄧㄡˊ ㄒㄧˋ'},
+  {e:'🌟',z:'我很棒',en:'I am great',zy:'ㄨㄛˇ ㄏㄣˇ ㄅㄤˋ'},
+  {e:'🙏',z:'謝謝你',en:'Thank you',zy:'ㄒㄧㄝˋ ㄒㄧㄝ ㄋㄧˇ'},
+  {e:'👋',z:'你好',en:'Hello',zy:'ㄋㄧˇ ㄏㄠˇ'},
+  {e:'😊',z:'再見',en:'Goodbye',zy:'ㄗㄞˋ ㄐㄧㄢˋ'},
+];
+
+function buildSelfIntro(){
+  const name=localStorage.getItem('childName')||'小朋友';
+  const age=localStorage.getItem('childAge')||'';
+  const g=document.getElementById('self-grid');
+  g.innerHTML='';
+  SELF_INTRO_TPL.forEach(tpl=>{
+    const z=tpl.z.replace('{name}',name).replace('{age}',age);
+    const en=tpl.en.replace('{name}',name).replace('{age}',age);
+    const d=document.createElement('div');
+    d.className='self-card';
+    d.innerHTML=`<span class="self-emoji">${tpl.e}</span><div class="self-en" style="font-size:clamp(.7rem,2.4vw,.85rem)">${z}</div><div class="self-zh" style="font-size:clamp(.6rem,2vw,.75rem)">${tpl.zy}</div>`;
+    d.addEventListener('click',()=>{
+      document.querySelectorAll('.self-card').forEach(c=>c.classList.remove('playing'));
+      d.classList.add('playing');
+      setTimeout(()=>d.classList.remove('playing'),500);
+      setTimeout(()=>{
+        speakZHQueue([z,tpl.zy],0);
+        setTimeout(()=>speak(en),2000);
+      },1000);
+    });
+    g.appendChild(d);
+  });
+}
+
+/* ══════════════════════════════════════════
    INIT
 ══════════════════════════════════════════ */
 window.addEventListener('DOMContentLoaded',()=>{
   vmLoadCustom();loadVoices();buildSelf();buildZhuyin();buildABC();
+  // restore child name/age
+  const cn=localStorage.getItem('childName');const ca=localStorage.getItem('childAge');
+  if(cn){const el=document.getElementById('child-name');if(el)el.value=cn;}
+  if(ca){const el=document.getElementById('child-age');if(el)el.value=ca;}
   setTimeout(()=>{document.getElementById('splash').classList.add('hidden');setTimeout(()=>document.getElementById('splash').remove(),600)},1200);
 });
 </script>
