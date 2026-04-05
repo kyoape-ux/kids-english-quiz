@@ -352,6 +352,29 @@ body{
 .vm-save{background:var(--mint);color:#fff}.vm-cancel{background:#eee;color:var(--dark)}
 .vm-reset{background:rgba(255,255,255,.85);border:none;border-radius:50px;padding:8px 20px;
   font-size:.8rem;font-weight:800;cursor:pointer;color:var(--coral);margin-top:4px}
+.vm-emoji-row{display:flex;gap:6px;align-items:center}
+.vm-emoji-row input{flex:1}
+.vm-emoji-pick-btn{flex-shrink:0;padding:8px 12px;background:var(--purple);color:#fff;border:none;
+  border-radius:10px;font-size:1rem;cursor:pointer;-webkit-tap-highlight-color:transparent}
+/* Emoji Picker */
+#emoji-picker{position:fixed;z-index:800;background:#fff;border-radius:22px;padding:14px 14px 10px;
+  box-shadow:0 16px 50px rgba(0,0,0,.28);width:min(340px,92vw);display:none;
+  max-height:70vh;flex-direction:column}
+#emoji-picker.show{display:flex}
+.ep-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.ep-title{font-weight:800;font-size:.92rem;color:var(--dark)}
+.ep-close{background:none;border:none;font-size:1.3rem;cursor:pointer;line-height:1;padding:2px 6px}
+.ep-cats{display:flex;gap:5px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;margin-bottom:6px}
+.ep-cats::-webkit-scrollbar{display:none}
+.ep-cat{background:#f4f4f8;border:none;border-radius:20px;padding:5px 12px;font-size:.78rem;
+  font-weight:800;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.ep-cat.active{background:var(--purple);color:#fff}
+.ep-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;overflow-y:auto;flex:1}
+.ep-em{font-size:1.55rem;background:none;border:none;cursor:pointer;border-radius:8px;
+  padding:4px;text-align:center;-webkit-tap-highlight-color:transparent;line-height:1.2}
+.ep-em:hover{background:#f0eeff}
+.ep-footer{margin-top:8px;text-align:center;font-size:.72rem;font-weight:800;color:var(--blue);
+  border-top:1px solid #f0f0f0;padding-top:7px}
 
 #splash{position:fixed;inset:0;z-index:999;background:linear-gradient(180deg,#87CEEB,#7EC850);
   display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s ease}
@@ -402,10 +425,16 @@ body{
     <select class="voice-select" id="voice-select" onchange="updateVoice(this)"><option value="-1">🎙️ 系統預設</option></select>
   </div>
   <div class="sp-row" style="flex-direction:column;align-items:flex-start;gap:5px">
-    <span class="sp-label">👶 孩子的名字</span>
+    <span class="sp-label">👶 孩子的中文名字</span>
     <input id="child-name" type="text" placeholder="例：陳宥穎"
       style="width:100%;padding:8px 12px;border:2px solid #eee;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700"
       oninput="localStorage.setItem('childName',this.value);buildSelfIntro()">
+  </div>
+  <div class="sp-row" style="flex-direction:column;align-items:flex-start;gap:5px">
+    <span class="sp-label">🔤 孩子的英文名字</span>
+    <input id="child-name-en" type="text" placeholder="例：Chen Yo Ying"
+      style="width:100%;padding:8px 12px;border:2px solid #eee;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700"
+      oninput="localStorage.setItem('childNameEN',this.value);buildSelfIntro()">
   </div>
   <div class="sp-row">
     <span class="sp-label">🎂 孩子的年齡</span>
@@ -536,7 +565,11 @@ body{
   <div class="vm-tabs" id="vm-tabs"></div>
   <div class="vm-form" id="vm-form">
     <label>英文單字 (English)</label><input id="vm-w" placeholder="例：CAT">
-    <label>Emoji 圖示</label><input id="vm-e" placeholder="例：🐱">
+    <label>Emoji 圖示</label>
+    <div class="vm-emoji-row">
+      <input id="vm-e" placeholder="例：🐱">
+      <button class="vm-emoji-pick-btn" onclick="openEmojiPicker()" title="選擇 Emoji">🎨</button>
+    </div>
     <label>中文</label><input id="vm-zh" placeholder="例：小貓">
     <label>注音</label><input id="vm-zy" placeholder="例：ㄒㄧㄠˇ ㄇㄠ">
     <div class="vm-form-btns">
@@ -544,6 +577,7 @@ body{
       <button class="vm-cancel" onclick="vmCancelForm()">取消</button>
     </div>
   </div>
+
   <button class="vm-add-btn" onclick="vmShowAdd()">＋ 新增單字</button>
   <div class="vm-list" id="vm-list"></div>
   <button class="vm-reset" onclick="vmReset()">🔄 恢復預設詞彙</button>
@@ -618,6 +652,21 @@ body{
     <button class="modal-close" onclick="closeIntroModal()">✓ 知道了！</button>
   </div>
 </div>
+
+<!-- ══ Emoji Picker ══ -->
+<div id="emoji-picker">
+  <div class="ep-header">
+    <span class="ep-title">🎨 選擇 Emoji</span>
+    <button class="ep-close" onclick="closeEmojiPicker()">✕</button>
+  </div>
+  <div class="ep-cats" id="ep-cats"></div>
+  <div class="ep-grid" id="ep-grid"></div>
+  <div class="ep-footer">
+    找不到想要的？→ <a href="https://emojipedia.org/" target="_blank" style="color:var(--blue)">Emojipedia 完整列表</a>
+    （複製後貼到輸入框）
+  </div>
+</div>
+<div id="ep-overlay" style="display:none;position:fixed;inset:0;z-index:799" onclick="closeEmojiPicker()"></div>
 
 <script>
 /* ══════════════════════════════════════════
@@ -1168,6 +1217,56 @@ function confetti(n=36){const colors=['#FFD93D','#FF6B6B','#6BCB77','#C77DFF','#
 function shuffle(a){return[...a].sort(()=>Math.random()-.5)}
 
 /* ══════════════════════════════════════════
+   EMOJI PICKER
+══════════════════════════════════════════ */
+const EP_DATA={
+  '動物':['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🦋','🐢','🐍','🦕','🦖','🐊','🐧','🦆','🦅','🦉','🦜','🐓','🐔','🐝','🐛','🦗','🐌','🦀','🦞','🦈','🐬','🐳','🐟','🐠','🐡','🦑','🐙','🦐','🪸','🌺'],
+  '食物':['🍎','🍊','🍋','🍇','🍓','🫐','🍈','🍑','🍒','🥭','🍍','🥥','🥝','🍅','🥑','🍆','🥔','🥕','🌽','🥦','🧅','🧄','🍄','🍞','🥐','🧆','🍳','🥚','🧀','🍖','🍗','🌮','🍜','🍣','🍱','🍛','🍔','🌭','🍕','🍰','🎂','🧁','🍩','🍦','🍧','🍫','🍬','🍭','🥛','☕','🧃','🍵','🥤','🍺','🧁'],
+  '交通':['🚗','🚕','🚙','🚌','🚎','🏎','🚑','🚒','🚐','🛻','🚚','🚛','🚜','🏍','🛵','🚲','🛴','🛹','🚁','🛸','✈️','🚀','⛵','🚢','🛳','🚤','🚂','🚃','🚄','🚇','🚊','🚝','🚡','🛺','🚓','🚔','🏎'],
+  '自然':['🌈','⭐','🌟','💫','✨','☀️','🌤','⛅','🌧','⛈','❄️','🌊','🌺','🌸','🌼','🌻','🌹','🍀','🌿','🍃','🎋','🎍','🌾','🍁','🍂','🌲','🌳','🌴','🪨','🌙','🌝','🌏','🌍','🌋','🏔','⛰','🏕','🌅','🌠','🎆','🌃'],
+  '表情':['😀','😁','😂','🤣','😊','😍','🥰','😘','😎','🤩','😴','😭','😡','😱','🤔','🥳','😷','🤒','🤗','😮','😲','🥺','🫶','🙏','👍','👎','✌️','🤞','🤜','👏','🎉','❤️','🧡','💛','💚','💙','💜'],
+  '物品':['📚','✏️','🖊','📝','📖','🎒','👟','👗','👑','💍','💎','🎁','🎈','🎉','🎊','🎮','🎯','🏆','🥇','⚽','🏀','🎸','🎵','📱','💻','📺','📷','🔑','💡','🔔','⏰','🧸','🪆','🎠','🎡','🎢','🎪','🎭','🎨','🖼','🪁'],
+  '職業':['👨‍⚕️','👩‍⚕️','👨‍🏫','👩‍🏫','👮','👷','👨‍🍳','👩‍🍳','👨‍✈️','👩‍✈️','👨‍🚒','👩‍🚒','👨‍🌾','👩‍🌾','🎤','🎨','🧑‍🎓','👸','🤴','🦸','🦹','🧙','🧝','🧜','🧚'],
+  '家庭':['👶','👦','👧','👨','👩','👴','👵','👨‍👩‍👧','👨‍👩‍👦','👪','💑','🤰','🫅','🧒'],
+  '符號':['❤️','🧡','💛','💚','💙','💜','🖤','🤍','💔','💯','⭕','❌','✅','🔴','🟠','🟡','🟢','🔵','🟣','⬛','⬜','🟩','🟦','🟨','🟧','🟥'],
+};
+let epCurrentCat=Object.keys(EP_DATA)[0];
+function openEmojiPicker(){
+  const picker=document.getElementById('emoji-picker');
+  const ov=document.getElementById('ep-overlay');
+  picker.classList.add('show');ov.style.display='block';
+  // position near the button
+  const btn=document.querySelector('.vm-emoji-pick-btn');
+  if(btn){const r=btn.getBoundingClientRect();
+    const top=Math.min(r.bottom+6,window.innerHeight-360);
+    picker.style.top=Math.max(10,top)+'px';
+    picker.style.left=Math.max(8,Math.min(r.left,window.innerWidth-350))+'px';
+  }
+  epRenderCats();epRenderGrid();
+}
+function closeEmojiPicker(){
+  document.getElementById('emoji-picker').classList.remove('show');
+  document.getElementById('ep-overlay').style.display='none';
+}
+function epRenderCats(){
+  const c=document.getElementById('ep-cats');c.innerHTML='';
+  Object.keys(EP_DATA).forEach(cat=>{
+    const b=document.createElement('button');b.className='ep-cat'+(cat===epCurrentCat?' active':'');
+    b.textContent=cat;b.onclick=()=>{epCurrentCat=cat;epRenderCats();epRenderGrid()};
+    c.appendChild(b)});
+}
+function epRenderGrid(){
+  const g=document.getElementById('ep-grid');g.innerHTML='';
+  EP_DATA[epCurrentCat].forEach(em=>{
+    const b=document.createElement('button');b.className='ep-em';b.textContent=em;
+    b.onclick=()=>{
+      const inp=document.getElementById('vm-e');
+      if(inp){inp.value=em;inp.focus();}
+      closeEmojiPicker();
+    };g.appendChild(b)});
+}
+
+/* ══════════════════════════════════════════
    VOCAB MANAGER — 家長詞彙管理後台
 ══════════════════════════════════════════ */
 const VM_KEY='kidsvocab_custom';
@@ -1309,12 +1408,13 @@ const SELF_INTRO_TPL=[
 let curIntro=null;
 function buildSelfIntro(){
   const name=localStorage.getItem('childName')||'小朋友';
+  const nameEN=localStorage.getItem('childNameEN')||name;
   const age=localStorage.getItem('childAge')||'';
   const g=document.getElementById('self-grid');
   g.innerHTML='';
   SELF_INTRO_TPL.forEach(tpl=>{
     const z=tpl.z.replace('{name}',name).replace('{age}',age);
-    const en=tpl.en.replace('{name}',name).replace('{age}',age);
+    const en=tpl.en.replace('{name}',nameEN).replace('{age}',age);
     const d=document.createElement('div');
     d.className='self-card';
     d.innerHTML=`<span class="self-emoji">${tpl.e}</span><div class="self-en" style="font-size:clamp(.68rem,2.3vw,.84rem);line-height:1.3">${z}</div><div class="self-zh" style="font-size:clamp(.58rem,1.9vw,.72rem)">${tpl.zy}</div>`;
@@ -1350,8 +1450,9 @@ function speakIntroCurrent(){
 window.addEventListener('DOMContentLoaded',()=>{
   vmLoadCustom();loadVoices();buildSelf();buildZhuyin();buildABC();
   // restore child name/age
-  const cn=localStorage.getItem('childName');const ca=localStorage.getItem('childAge');
+  const cn=localStorage.getItem('childName');const cne=localStorage.getItem('childNameEN');const ca=localStorage.getItem('childAge');
   if(cn){const el=document.getElementById('child-name');if(el)el.value=cn;}
+  if(cne){const el=document.getElementById('child-name-en');if(el)el.value=cne;}
   if(ca){const el=document.getElementById('child-age');if(el)el.value=ca;}
   setTimeout(()=>{document.getElementById('splash').classList.add('hidden');setTimeout(()=>document.getElementById('splash').remove(),600)},1200);
 });
