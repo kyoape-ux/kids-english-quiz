@@ -53,8 +53,8 @@ body{
 .screen.active{opacity:1;pointer-events:all;transform:translateY(0)}
 
 /* ═══════ HOME ═══════ */
-#s-home{justify-content:center}
-.home-floats{display:flex;justify-content:center;align-items:flex-end;gap:4px;margin-bottom:6px;height:90px;overflow:visible}
+#s-home{justify-content:flex-start;padding-top:clamp(10px,6vh,36px)}
+.home-floats{display:flex;justify-content:center;align-items:flex-end;gap:4px;margin-bottom:6px;height:76px;overflow:visible}
 .hf{font-size:clamp(3.2rem,13vw,5.2rem);line-height:1;display:block;filter:drop-shadow(0 6px 12px rgba(0,0,0,.18));animation:hf-bob var(--hf-dur,2s) ease-in-out infinite alternate;animation-delay:var(--hf-del,0s)}
 @keyframes hf-bob{from{transform:translateY(0) rotate(var(--hf-r,-4deg))}to{transform:translateY(-14px) rotate(var(--hf-r2,4deg))}}
 @keyframes bounce-row{from{transform:translateY(0)}to{transform:translateY(-13px)}}
@@ -647,14 +647,15 @@ function loadVoices(){if(!window.speechSynthesis)return;const u=()=>{const all=s
 function renderVoiceSel(){const s=document.getElementById('voice-select');if(!s)return;s.innerHTML='<option value="-1">🎙️ 系統預設</option>';voiceList.forEach((v,i)=>{const f=/female|samantha|karen|moira|victoria|ava|susan|lisa|kate|fiona|veena|zira|hazel|linda|zoe|heather/i.test(v.name);const o=document.createElement('option');o.value=i;o.textContent=`${f?'👩':'👨'} ${v.name} (${v.lang})`;s.appendChild(o)})}
 function updateVoice(sel){const i=parseInt(sel.value);chosenVoice=i>=0?voiceList[i]:null}
 function speak(word,cb){if(!window.speechSynthesis){cb&&cb();return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(word);if(chosenVoice)u.voice=chosenVoice;u.lang='en-US';u.rate=.82;u.pitch=1.05;if(cb)u.onend=cb;speechSynthesis.speak(u)}
-/* 依序唸多段中文（用 queue 避免被 cancel 掉） */
-function speakZHQueue(segments,idx){
-  idx=idx||0;if(idx>=segments.length||!window.speechSynthesis)return;
+/* 依序唸多段中文（用 queue 避免被 cancel 掉），唸完後呼叫 onDone callback */
+function speakZHQueue(segments,idx,onDone){
+  idx=idx||0;
+  if(idx>=segments.length||!window.speechSynthesis){if(typeof onDone==='function')onDone();return;}
   if(idx===0)speechSynthesis.cancel();
   const u=new SpeechSynthesisUtterance(segments[idx]);
   if(zhVoice)u.voice=zhVoice;
   u.lang='zh-TW';u.rate=.75;u.pitch=1.1;
-  u.onend=()=>setTimeout(()=>speakZHQueue(segments,idx+1),200);
+  u.onend=()=>setTimeout(()=>speakZHQueue(segments,idx+1,onDone),250);
   speechSynthesis.speak(u);
 }
 
@@ -1095,9 +1096,11 @@ function openSelf(it,card){
 function closeSelfModal(){document.getElementById('self-modal').classList.remove('show')}
 function speakSelfCurrent(){
   if(!curSelf)return;
-  // 先唸中文，再唸英文
-  speakZHQueue([curSelf.z]);
-  setTimeout(()=>speak(curSelf.w),1200);
+  speakZHQueue([curSelf.z, curSelf.z], 0, ()=>{
+    setTimeout(()=>speak(curSelf.w, ()=>{
+      setTimeout(()=>speak(curSelf.w), 350);
+    }), 450);
+  });
 }
 
 /* ══════════════════════════════════════════
@@ -1279,8 +1282,12 @@ function openVlModal(it){
 function closeVlModal(){document.getElementById('vl-modal').classList.remove('show')}
 function speakVlCurrent(){
   if(!curVl)return;
-  speakZHQueue([curVl.z,curVl.zy],0);
-  setTimeout(()=>speak(curVl.w),2200);
+  // 中文詞彙 ×2，再英文 ×2，全部用 callback 串接確保順序
+  speakZHQueue([curVl.z, curVl.z], 0, ()=>{
+    setTimeout(()=>speak(curVl.w, ()=>{
+      setTimeout(()=>speak(curVl.w), 350);
+    }), 450);
+  });
 }
 
 /* ══════════════════════════════════════════
@@ -1330,8 +1337,11 @@ function openIntroModal(it){
 function closeIntroModal(){document.getElementById('intro-modal').classList.remove('show')}
 function speakIntroCurrent(){
   if(!curIntro)return;
-  speakZHQueue([curIntro.z,curIntro.zy],0);
-  setTimeout(()=>speak(curIntro.en),2200);
+  speakZHQueue([curIntro.z, curIntro.z], 0, ()=>{
+    setTimeout(()=>speak(curIntro.en, ()=>{
+      setTimeout(()=>speak(curIntro.en), 350);
+    }), 450);
+  });
 }
 
 /* ══════════════════════════════════════════
