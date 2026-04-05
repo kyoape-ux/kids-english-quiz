@@ -316,6 +316,21 @@ body{
   background:var(--dark);color:#fff;font-family:'Fredoka One',cursive;font-size:1.05rem;cursor:pointer}
 .sp-overlay{position:fixed;inset:0;z-index:305;display:none}.sp-overlay.show{display:block}
 
+/* VM section tabs */
+.vm-sticky-hdr{position:sticky;top:0;z-index:50;width:100%;max-width:560px;
+  background:linear-gradient(to bottom,rgba(135,206,235,.98) 88%,rgba(135,206,235,0));
+  padding:12px 0 0;display:flex;flex-direction:column;align-items:center;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#s-vocab{padding-top:0;align-items:center}
+.vm-sec-tabs{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  padding:0 4px 8px;width:100%;scrollbar-width:none;margin-bottom:4px}
+.vm-sec-tabs::-webkit-scrollbar{display:none}
+.vm-sec-tab{flex-shrink:0;background:rgba(255,255,255,.85);border:none;border-radius:12px;
+  padding:7px 13px;font-family:'Nunito',sans-serif;font-size:clamp(.72rem,2.6vw,.84rem);
+  font-weight:800;cursor:pointer;color:var(--dark);-webkit-tap-highlight-color:transparent;white-space:nowrap;
+  box-shadow:0 2px 6px var(--shadow)}
+.vm-sec-tab.active{background:var(--dark);color:#fff}
+
 /* ═══════ VOCAB MANAGER ═══════ */
 #s-vocab{background:rgba(255,255,255,.06)}
 .vm-tabs{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
@@ -569,27 +584,16 @@ body{
 
 <!-- ═══════ 詞彙管理 ═══════ -->
 <section class="screen" id="s-vocab">
-  <button class="back-btn" onclick="showScreen('s-home')">🏠 回主頁</button>
-  <div class="sec-title">📝 詞彙管理</div>
-  <div class="vm-tabs" id="vm-tabs"></div>
-  <div class="vm-form" id="vm-form">
-    <label>英文單字 (English)</label><input id="vm-w" placeholder="例：CAT">
-    <label>Emoji 圖示</label>
-    <div class="vm-emoji-row">
-      <input id="vm-e" placeholder="例：🐱">
-      <button class="vm-emoji-pick-btn" onclick="openEmojiPicker()" title="選擇 Emoji">🎨</button>
-    </div>
-    <label>中文</label><input id="vm-zh" placeholder="例：小貓">
-    <label>注音</label><input id="vm-zy" placeholder="例：ㄒㄧㄠˇ ㄇㄠ">
-    <div class="vm-form-btns">
-      <button class="vm-save" onclick="vmSave()">💾 儲存</button>
-      <button class="vm-cancel" onclick="vmCancelForm()">取消</button>
-    </div>
+  <div class="vm-sticky-hdr">
+    <button class="back-btn" style="margin-bottom:6px" onclick="showScreen('s-home')">🏠 回主頁</button>
+    <div class="sec-title" style="margin-bottom:8px">📝 詞彙管理</div>
+    <div class="vm-sec-tabs" id="vm-sec-tabs"></div>
+    <div class="vm-tabs" id="vm-tabs"></div>
   </div>
-
+  <div class="vm-form" id="vm-form"></div>
   <button class="vm-add-btn" onclick="vmShowAdd()">＋ 新增單字</button>
   <div class="vm-list" id="vm-list"></div>
-  <button class="vm-reset" onclick="vmReset()">🔄 恢復預設詞彙</button>
+  <button class="vm-reset" onclick="vmReset()">🔄 恢復所有預設</button>
 </section>
 
 <!-- ═══════ DONE ═══════ -->
@@ -816,6 +820,7 @@ const SELF=[
     {e:'🧑',w:'ME',z:'我',zy:'ㄨㄛˇ'},{e:'👫',w:'FRIEND',z:'朋友',zy:'ㄆㄥˊ ㄧㄡˇ'},
   ]},
 ];
+const DEFAULT_SELF=JSON.parse(JSON.stringify(SELF.map(c=>({cat:c.cat,items:[...c.items]}))));
 
 /* ── 注音 DATA（無拼音，改用注音讀法 zy） ── */
 const ZHUYIN=[
@@ -857,6 +862,7 @@ const ZHUYIN=[
   {sym:'ㄥ',cat:'韻母',word:'老鷹',zy:'ㄌㄠˇ ㄧㄥ',emoji:'🦅'},
   {sym:'ㄦ',cat:'韻母',word:'耳朵',zy:'ㄦˇ ㄉㄨㄛˇ',emoji:'👂'},
 ];
+const DEFAULT_ZHUYIN=JSON.parse(JSON.stringify(ZHUYIN));
 
 /* ── ABC DATA ── */
 const ABC=[
@@ -874,6 +880,7 @@ const ABC=[
   {L:'W',word:'Whale',zh:'鯨魚',emoji:'🐳'},{L:'X',word:'X-ray',zh:'X光',emoji:'🩻'},
   {L:'Y',word:'Yak',zh:'犛牛',emoji:'🐂'},{L:'Z',word:'Zebra',zh:'斑馬',emoji:'🦓'},
 ];
+const DEFAULT_ABC=JSON.parse(JSON.stringify(ABC));
 
 const PRAISE_OK=['太棒了！🎉','答對了！🌟','好厲害！✨','完美！💯','正確！🎊','你真棒！⭐'];
 const PRAISE_NO=['再試試看！','加油！💪','想一想～🤔','不對喔，再來！'];
@@ -1058,6 +1065,7 @@ const VL_CATS=[
     {w:'SLEEP',z:'睡覺',zy:'ㄕㄨㄟˋ ㄐㄧㄠˋ',e:'😴'},
   ]},
 ];
+const DEFAULT_VL=JSON.parse(JSON.stringify(VL_CATS.map(c=>({id:c.id,items:[...c.items]}))));
 
 /* ══════════════════════════════════════════
    STATE
@@ -1281,69 +1289,195 @@ function epRenderGrid(){
    VOCAB MANAGER — 家長詞彙管理後台
 ══════════════════════════════════════════ */
 const VM_KEY='kidsvocab_custom';
-let vmCat='animals',vmEditIdx=-1;
 // 預設資料深拷貝
 const DEFAULT_CATS=JSON.parse(JSON.stringify(CATS.map(c=>({id:c.id,name:c.name,icon:c.icon,color:c.color,items:[...c.items]}))));
 
 function vmLoadCustom(){
   try{const d=localStorage.getItem(VM_KEY);if(d){const parsed=JSON.parse(d);
     parsed.forEach(cc=>{const target=CATS.find(c=>c.id===cc.id);if(target)target.items=cc.items});
-    // rebuild ALL
     rebuildALL();
   }}catch(e){}
 }
-function vmSaveCustom(){
-  localStorage.setItem(VM_KEY,JSON.stringify(CATS.map(c=>({id:c.id,items:c.items}))));
-  rebuildALL();
-}
 function rebuildALL(){ALL.length=0;CATS.forEach(c=>c.items.forEach(it=>ALL.push({...it,_cid:c.id})))}
 
-function vmInit(){
-  // build tabs
-  const tabs=document.getElementById('vm-tabs');tabs.innerHTML='';
-  CATS.forEach(c=>{const b=document.createElement('button');b.className='vm-tab'+(c.id===vmCat?' active':'');
-    b.textContent=`${c.icon} ${c.name}`;b.onclick=()=>{vmCat=c.id;vmInit()};tabs.appendChild(b)});
-  vmCancelForm();vmRenderList();
+function loadSelfCustom(){
+  try{const d=localStorage.getItem('kidsvocab_self');if(!d)return;
+    JSON.parse(d).forEach(cc=>{const t=SELF.find(s=>s.cat===cc.cat);if(t)t.items=cc.items})
+  }catch(e){}
+}
+function saveSelfCustom(){
+  localStorage.setItem('kidsvocab_self',JSON.stringify(SELF.map(c=>({cat:c.cat,items:c.items}))));
+  buildSelf();
+}
+function loadZhuyinCustom(){
+  try{const d=localStorage.getItem('kidsvocab_zhuyin');if(!d)return;
+    const p=JSON.parse(d);ZHUYIN.length=0;p.forEach(z=>ZHUYIN.push(z))
+  }catch(e){}
+}
+function saveZhuyinCustom(){
+  localStorage.setItem('kidsvocab_zhuyin',JSON.stringify(ZHUYIN));buildZhuyin();
+}
+function loadAbcCustom(){
+  try{const d=localStorage.getItem('kidsvocab_abc');if(!d)return;
+    const p=JSON.parse(d);ABC.length=0;p.forEach(a=>ABC.push(a))
+  }catch(e){}
+}
+function saveAbcCustom(){
+  localStorage.setItem('kidsvocab_abc',JSON.stringify(ABC));buildABC();
+}
+function loadVlCustom(){
+  try{const d=localStorage.getItem('kidsvocab_vl');if(!d)return;
+    JSON.parse(d).forEach(cc=>{const t=VL_CATS.find(c=>c.id===cc.id);if(t)t.items=cc.items})
+  }catch(e){}
+}
+function saveVlCustom(){
+  localStorage.setItem('kidsvocab_vl',JSON.stringify(VL_CATS.map(c=>({id:c.id,items:c.items}))));
+  if(typeof vlRenderGrid==='function')vlRenderGrid();
+}
+
+/* ── VM SECTION CONFIG ── */
+const VM_SEC={
+  self:{name:'認識自己',icon:'🧒',
+    hasCats:true,
+    getCats:()=>SELF.map(c=>({id:c.cat,name:c.cat})),
+    getItems:(cat)=>(SELF.find(c=>c.cat===cat)||SELF[0]).items,
+    disp:(it)=>({e:it.e,t:it.z,s1:it.w,s2:it.zy||''}),
+    fields:['emoji','zh','en','zy'],
+    fromForm:()=>({e:_fv('vm-e'),z:_fv('vm-zh'),w:_fv('vm-w').toUpperCase(),zy:_fv('vm-zy')}),
+    toForm:(it)=>{_sv('vm-e',it.e);_sv('vm-zh',it.z);_sv('vm-w',it.w);_sv('vm-zy',it.zy||'')},
+    validate:(it)=>it.e&&it.z&&it.w,
+    add:(cat,item)=>(SELF.find(c=>c.cat===cat)||SELF[0]).items.push(item),
+    edit:(cat,idx,item)=>{const arr=(SELF.find(c=>c.cat===cat)||SELF[0]).items;arr[idx]=item},
+    del:(cat,idx)=>(SELF.find(c=>c.cat===cat)||SELF[0]).items.splice(idx,1),
+    save:saveSelfCustom, defaultCat:'身體'},
+  cats:{name:'聽音配對',icon:'🎧',
+    hasCats:true,
+    getCats:()=>CATS.map(c=>({id:c.id,name:c.icon+' '+c.name})),
+    getItems:(cat)=>(CATS.find(c=>c.id===cat)||CATS[0]).items,
+    disp:(it)=>({e:it.e,t:it.w,s1:it.z,s2:it.zy||''}),
+    fields:['en','emoji','zh','zy'],
+    fromForm:()=>({w:_fv('vm-w').toUpperCase(),e:_fv('vm-e'),z:_fv('vm-zh'),zy:_fv('vm-zy')}),
+    toForm:(it)=>{_sv('vm-w',it.w);_sv('vm-e',it.e);_sv('vm-zh',it.z);_sv('vm-zy',it.zy||'')},
+    validate:(it)=>it.w&&it.e&&it.z,
+    add:(cat,item)=>(CATS.find(c=>c.id===cat)||CATS[0]).items.push(item),
+    edit:(cat,idx,item)=>{(CATS.find(c=>c.id===cat)||CATS[0]).items[idx]=item},
+    del:(cat,idx)=>(CATS.find(c=>c.id===cat)||CATS[0]).items.splice(idx,1),
+    save:()=>{localStorage.setItem('kidsvocab_custom',JSON.stringify(CATS.map(c=>({id:c.id,items:c.items}))));rebuildALL()},
+    defaultCat:'animals'},
+  zhuyin:{name:'注音學習',icon:'ㄅ',
+    hasCats:true,
+    getCats:()=>[{id:'聲母',name:'聲母'},{id:'介母',name:'介母'},{id:'韻母',name:'韻母'},{id:'all',name:'全部'}],
+    getItems:(cat)=>cat==='all'?ZHUYIN:ZHUYIN.filter(z=>z.cat===cat),
+    disp:(it)=>({e:it.emoji,t:it.sym+' '+it.word,s1:it.zy,s2:it.cat}),
+    fields:['sym','zycat','word','emoji','zy'],
+    fromForm:()=>({sym:_fv('vm-sym'),cat:_fv('vm-zy-cat')||'聲母',word:_fv('vm-word'),emoji:_fv('vm-e'),zy:_fv('vm-zy')}),
+    toForm:(it)=>{_sv('vm-sym',it.sym);_sv('vm-zy-cat',it.cat);_sv('vm-word',it.word);_sv('vm-e',it.emoji);_sv('vm-zy',it.zy)},
+    validate:(it)=>it.sym&&it.word&&it.emoji,
+    add:(_,item)=>ZHUYIN.push(item),
+    edit:(cat,idx,item)=>{const arr=cat==='all'?ZHUYIN:ZHUYIN.filter(z=>z.cat===cat);const ri=ZHUYIN.indexOf(arr[idx]);if(ri>=0)ZHUYIN[ri]=item},
+    del:(cat,idx)=>{const arr=cat==='all'?ZHUYIN:ZHUYIN.filter(z=>z.cat===cat);const ri=ZHUYIN.indexOf(arr[idx]);if(ri>=0)ZHUYIN.splice(ri,1)},
+    save:saveZhuyinCustom, defaultCat:'聲母'},
+  abc:{name:'ABC字母',icon:'Aa',
+    hasCats:false,
+    getCats:()=>[],
+    getItems:()=>ABC,
+    disp:(it)=>({e:it.emoji,t:it.L+' · '+it.word,s1:it.zh,s2:''}),
+    fields:['letter','word','zh','emoji'],
+    fromForm:()=>({L:(_fv('vm-letter').toUpperCase().charAt(0)||''),word:_fv('vm-word'),zh:_fv('vm-zh'),emoji:_fv('vm-e')}),
+    toForm:(it)=>{_sv('vm-letter',it.L);_sv('vm-word',it.word);_sv('vm-zh',it.zh);_sv('vm-e',it.emoji)},
+    validate:(it)=>it.L&&it.word&&it.zh&&it.emoji,
+    add:(_,item)=>ABC.push(item),
+    edit:(_,idx,item)=>{ABC[idx]=item},
+    del:(_,idx)=>ABC.splice(idx,1),
+    save:saveAbcCustom, defaultCat:null},
+  vl:{name:'認識詞彙',icon:'📖',
+    hasCats:true,
+    getCats:()=>VL_CATS.map(c=>({id:c.id,name:c.icon+' '+c.name})),
+    getItems:(cat)=>(VL_CATS.find(c=>c.id===cat)||VL_CATS[0]).items,
+    disp:(it)=>({e:it.e,t:it.z,s1:it.w,s2:it.zy||''}),
+    fields:['emoji','zh','en','zy'],
+    fromForm:()=>({e:_fv('vm-e'),z:_fv('vm-zh'),w:_fv('vm-w').toUpperCase(),zy:_fv('vm-zy')}),
+    toForm:(it)=>{_sv('vm-e',it.e);_sv('vm-zh',it.z);_sv('vm-w',it.w);_sv('vm-zy',it.zy||'')},
+    validate:(it)=>it.e&&it.z&&it.w,
+    add:(cat,item)=>(VL_CATS.find(c=>c.id===cat)||VL_CATS[0]).items.push(item),
+    edit:(cat,idx,item)=>{(VL_CATS.find(c=>c.id===cat)||VL_CATS[0]).items[idx]=item},
+    del:(cat,idx)=>(VL_CATS.find(c=>c.id===cat)||VL_CATS[0]).items.splice(idx,1),
+    save:saveVlCustom, defaultCat:'animals'},
+};
+function _fv(id){const el=document.getElementById(id);return el?el.value.trim():''}
+function _sv(id,v){const el=document.getElementById(id);if(el)el.value=v||''}
+
+let vmSection='cats',vmCat='animals',vmEditIdx=-1,vmCurrentItems=[];
+
+function vmInit(){vmRenderAll()}
+function vmSetSection(sec){
+  vmSection=sec;
+  const cfg=VM_SEC[sec];
+  vmCat=cfg.defaultCat||(cfg.getCats()[0]?.id)||null;
+  vmEditIdx=-1;vmCancelForm();vmRenderAll();
+}
+function vmRenderAll(){vmRenderSecTabs();vmRenderSubTabs();vmRenderList()}
+function vmRenderSecTabs(){
+  const el=document.getElementById('vm-sec-tabs');if(!el)return;el.innerHTML='';
+  Object.entries(VM_SEC).forEach(([id,c])=>{
+    const b=document.createElement('button');b.className='vm-sec-tab'+(id===vmSection?' active':'');
+    b.textContent=c.icon+' '+c.name;b.onclick=()=>vmSetSection(id);el.appendChild(b)});
+}
+function vmRenderSubTabs(){
+  const el=document.getElementById('vm-tabs');if(!el)return;el.innerHTML='';
+  const cfg=VM_SEC[vmSection];if(!cfg.hasCats)return;
+  cfg.getCats().forEach(cat=>{
+    const b=document.createElement('button');b.className='vm-tab'+(cat.id===vmCat?' active':'');
+    b.textContent=cat.name;
+    b.onclick=()=>{vmCat=cat.id;vmCancelForm();vmRenderSubTabs();vmRenderList()};
+    el.appendChild(b)});
 }
 function vmRenderList(){
+  const cfg=VM_SEC[vmSection];
+  vmCurrentItems=[...cfg.getItems(vmCat)];
   const list=document.getElementById('vm-list');list.innerHTML='';
-  const cat=CATS.find(c=>c.id===vmCat);if(!cat)return;
-  cat.items.forEach((it,i)=>{
-    const d=document.createElement('div');d.className='vm-item';
-    d.innerHTML=`<span class="vm-emoji">${it.e}</span><div class="vm-info"><div class="vm-w">${it.w}</div><div class="vm-z">${it.z}</div><div class="vm-zy">${it.zy||''}</div></div><button class="vm-edit" onclick="vmStartEdit(${i})">✏️</button><button class="vm-del" onclick="vmDel(${i})">🗑️</button>`;
-    list.appendChild(d)});
+  vmCurrentItems.forEach((it,i)=>{
+    const d=cfg.disp(it);const el=document.createElement('div');el.className='vm-item';
+    el.innerHTML=`<span class="vm-emoji">${d.e}</span><div class="vm-info"><div class="vm-w">${d.t}</div><div class="vm-z">${d.s1}</div><div class="vm-zy">${d.s2}</div></div><button class="vm-edit" onclick="vmStartEdit(${i})">✏️</button><button class="vm-del" onclick="vmDel(${i})">🗑️</button>`;
+    list.appendChild(el)});
 }
-function vmShowAdd(){vmEditIdx=-1;const f=document.getElementById('vm-form');f.classList.add('show');
-  ['vm-w','vm-e','vm-zh','vm-zy'].forEach(id=>document.getElementById(id).value='')}
-function vmStartEdit(i){
-  const cat=CATS.find(c=>c.id===vmCat);if(!cat)return;
-  vmEditIdx=i;const it=cat.items[i];
-  document.getElementById('vm-w').value=it.w;document.getElementById('vm-e').value=it.e;
-  document.getElementById('vm-zh').value=it.z;document.getElementById('vm-zy').value=it.zy||'';
-  document.getElementById('vm-form').classList.add('show');
+function vmShowAdd(){vmEditIdx=-1;vmRenderForm()}
+function vmStartEdit(i){vmEditIdx=i;vmRenderForm();VM_SEC[vmSection].toForm(vmCurrentItems[i])}
+function vmCancelForm(){const f=document.getElementById('vm-form');if(f){f.classList.remove('show');f.innerHTML=''}vmEditIdx=-1}
+function vmRenderForm(){
+  const cfg=VM_SEC[vmSection];const fields=cfg.fields;let h='';
+  if(fields.includes('sym'))h+='<label>注音符號（如ㄅ）</label><input id="vm-sym" placeholder="ㄅ">';
+  if(fields.includes('zycat'))h+='<label>分類</label><select id="vm-zy-cat"><option value="聲母">聲母</option><option value="介母">介母</option><option value="韻母">韻母</option></select>';
+  if(fields.includes('letter'))h+='<label>字母（A-Z）</label><input id="vm-letter" placeholder="A" maxlength="1" style="text-transform:uppercase">';
+  if(fields.includes('en'))h+='<label>英文單字（English）</label><input id="vm-w" placeholder="例：CAT">';
+  if(fields.includes('word'))h+='<label>英文詞彙</label><input id="vm-word" placeholder="例：Apple">';
+  if(fields.includes('zh'))h+='<label>中文</label><input id="vm-zh" placeholder="例：小貓">';
+  if(fields.includes('emoji'))h+='<label>Emoji 圖示</label><div class="vm-emoji-row"><input id="vm-e" placeholder="例：🐱"><button class="vm-emoji-pick-btn" onclick="openEmojiPicker()" title="選擇Emoji">🎨</button></div>';
+  if(fields.includes('zy'))h+='<label>注音讀法</label><input id="vm-zy" placeholder="例：ㄒㄧㄠˇ ㄇㄠ">';
+  h+='<div class="vm-form-btns"><button class="vm-save" onclick="vmSave()">💾 儲存</button><button class="vm-cancel" onclick="vmCancelForm()">取消</button></div>';
+  const f=document.getElementById('vm-form');f.innerHTML=h;f.classList.add('show');
 }
-function vmCancelForm(){document.getElementById('vm-form').classList.remove('show');vmEditIdx=-1}
 function vmSave(){
-  const w=document.getElementById('vm-w').value.trim().toUpperCase();
-  const e=document.getElementById('vm-e').value.trim();
-  const z=document.getElementById('vm-zh').value.trim();
-  const zy=document.getElementById('vm-zy').value.trim();
-  if(!w||!e||!z){alert('請至少填寫英文、Emoji 和中文');return}
-  const cat=CATS.find(c=>c.id===vmCat);if(!cat)return;
-  const item={w,e,z,zy};
-  if(vmEditIdx>=0){cat.items[vmEditIdx]=item}else{cat.items.push(item)}
-  vmSaveCustom();vmCancelForm();vmRenderList();
+  const cfg=VM_SEC[vmSection];const item=cfg.fromForm();
+  if(!cfg.validate(item)){alert('請填寫必填欄位');return}
+  if(vmEditIdx>=0){cfg.edit(vmCat,vmEditIdx,item)}else{cfg.add(vmCat,item)}
+  cfg.save();vmCancelForm();vmRenderList();
 }
 function vmDel(i){
-  const cat=CATS.find(c=>c.id===vmCat);if(!cat)return;
-  if(!confirm(`確定刪除「${cat.items[i].z}」？`))return;
-  cat.items.splice(i,1);vmSaveCustom();vmRenderList();
+  const cfg=VM_SEC[vmSection];const d=cfg.disp(vmCurrentItems[i]);
+  if(!confirm('確定刪除「'+d.t+'」？'))return;
+  cfg.del(vmCat,i);cfg.save();vmRenderList();
 }
 function vmReset(){
   if(!confirm('確定恢復所有預設詞彙？自訂的修改將被清除。'))return;
-  localStorage.removeItem(VM_KEY);
+  ['kidsvocab_custom','kidsvocab_self','kidsvocab_zhuyin','kidsvocab_abc','kidsvocab_vl'].forEach(k=>localStorage.removeItem(k));
   DEFAULT_CATS.forEach(dc=>{const t=CATS.find(c=>c.id===dc.id);if(t)t.items=JSON.parse(JSON.stringify(dc.items))});
-  rebuildALL();vmRenderList();
+  DEFAULT_SELF.forEach(ds=>{const t=SELF.find(s=>s.cat===ds.cat);if(t)t.items=JSON.parse(JSON.stringify(ds.items))});
+  ZHUYIN.length=0;DEFAULT_ZHUYIN.forEach(z=>ZHUYIN.push({...z}));
+  ABC.length=0;DEFAULT_ABC.forEach(a=>ABC.push({...a}));
+  VL_CATS.forEach(vc=>{const def=DEFAULT_VL.find(d=>d.id===vc.id);if(def)vc.items=JSON.parse(JSON.stringify(def.items))});
+  rebuildALL();buildSelf();buildZhuyin();buildABC();
+  vmRenderList();alert('已恢復所有預設詞彙！');
 }
 
 /* ══════════════════════════════════════════
@@ -1463,7 +1597,7 @@ function speakIntroCurrent(){
    INIT
 ══════════════════════════════════════════ */
 window.addEventListener('DOMContentLoaded',()=>{
-  vmLoadCustom();loadVoices();buildSelf();buildZhuyin();buildABC();
+  vmLoadCustom();loadSelfCustom();loadZhuyinCustom();loadAbcCustom();loadVlCustom();loadVoices();buildSelf();buildZhuyin();buildABC();
   // restore child name/age
   const cn=localStorage.getItem('childName');const cne=localStorage.getItem('childNameEN');const ca=localStorage.getItem('childAge');
   if(cn){const el=document.getElementById('child-name');if(el)el.value=cn;}
