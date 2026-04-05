@@ -361,10 +361,12 @@ body{
 .splash-sub{color:rgba(255,255,255,.8);font-weight:800;margin-top:8px}
 
 /* ═══════ 認識詞彙 ═══════ */
-.vl-tabs{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;max-width:560px;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.vl-tabs{display:flex;gap:7px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding:0 4px 8px;margin-bottom:10px;width:100%;max-width:100%;scrollbar-width:none}
+.vl-tabs::-webkit-scrollbar{display:none}
 .vl-tab{background:#fff;border:3px solid #ddd;border-radius:50px;padding:7px 16px;
   font-family:'Nunito',sans-serif;font-size:clamp(.75rem,2.8vw,.9rem);font-weight:800;
-  cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;color:var(--dark)}
+  cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;color:var(--dark);
+  flex-shrink:0;white-space:nowrap}
 .vl-tab.active{border-color:#E91E8C;background:#E91E8C;color:#fff}
 .vl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:11px;
   max-width:600px;width:100%}
@@ -590,6 +592,30 @@ body{
     <div class="abc-d-zh" id="abc-m-zh"></div>
     <button class="abc-speak" onclick="speakAbc()">🔊 聽英文</button>
     <button class="modal-close" onclick="closeAbcModal()">✓ 知道了！</button>
+  </div>
+</div>
+
+<!-- 認識詞彙 modal -->
+<div class="modal-overlay" id="vl-modal" onclick="closeVlModal()">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="zy-emoji-big" id="vl-m-emoji"></div>
+    <div class="zy-d-word" id="vl-m-zh"></div>
+    <div class="zy-d-reading" id="vl-m-zy"></div>
+    <div style="font-family:'Fredoka One',cursive;font-size:clamp(1.2rem,5vw,1.8rem);color:var(--dark);margin:6px 0" id="vl-m-en"></div>
+    <button class="speak-btn" onclick="speakVlCurrent()" style="width:100%;justify-content:center;margin-bottom:8px">🔊 再聽一次</button>
+    <button class="modal-close" onclick="closeVlModal()">✓ 知道了！</button>
+  </div>
+</div>
+
+<!-- 自我介紹 modal -->
+<div class="modal-overlay" id="intro-modal" onclick="closeIntroModal()">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="zy-emoji-big" id="intro-m-emoji"></div>
+    <div class="zy-d-word" id="intro-m-zh" style="font-size:clamp(1.4rem,6vw,2.2rem)"></div>
+    <div class="zy-d-reading" id="intro-m-zy"></div>
+    <div style="font-size:clamp(.9rem,3.5vw,1.2rem);color:#999;font-weight:800;margin:6px 0" id="intro-m-en"></div>
+    <button class="speak-btn" onclick="speakIntroCurrent()" style="width:100%;justify-content:center;margin-bottom:8px">🔊 再聽一次</button>
+    <button class="modal-close" onclick="closeIntroModal()">✓ 知道了！</button>
   </div>
 </div>
 
@@ -1224,6 +1250,7 @@ function vlInit(catId){
   });
   vlRenderGrid();
 }
+let curVl=null;
 function vlRenderGrid(){
   const g=document.getElementById('vl-grid');
   g.innerHTML='';
@@ -1234,16 +1261,26 @@ function vlRenderGrid(){
     d.className='vl-card';
     d.innerHTML=`<span class="vl-emoji">${it.e}</span><div class="vl-zh">${it.z}</div><div class="vl-zy">${it.zy}</div><div class="vl-en">${it.w}</div>`;
     d.addEventListener('click',()=>{
-      document.querySelectorAll('.vl-card').forEach(c=>c.classList.remove('playing'));
-      d.classList.add('playing');
-      setTimeout(()=>d.classList.remove('playing'),600);
-      setTimeout(()=>{
-        speakZHQueue([it.z,it.zy],0);
-        setTimeout(()=>speak(it.w),2000);
-      },1000);
+      d.classList.add('playing');setTimeout(()=>d.classList.remove('playing'),500);
+      openVlModal(it);
     });
     g.appendChild(d);
   });
+}
+function openVlModal(it){
+  curVl=it;
+  document.getElementById('vl-m-emoji').textContent=it.e;
+  document.getElementById('vl-m-zh').textContent=it.z;
+  document.getElementById('vl-m-zy').textContent=it.zy;
+  document.getElementById('vl-m-en').textContent=it.w;
+  document.getElementById('vl-modal').classList.add('show');
+  setTimeout(()=>speakVlCurrent(),1000);
+}
+function closeVlModal(){document.getElementById('vl-modal').classList.remove('show')}
+function speakVlCurrent(){
+  if(!curVl)return;
+  speakZHQueue([curVl.z,curVl.zy],0);
+  setTimeout(()=>speak(curVl.w),2200);
 }
 
 /* ══════════════════════════════════════════
@@ -1262,6 +1299,7 @@ const SELF_INTRO_TPL=[
   {e:'😊',z:'再見',en:'Goodbye',zy:'ㄗㄞˋ ㄐㄧㄢˋ'},
 ];
 
+let curIntro=null;
 function buildSelfIntro(){
   const name=localStorage.getItem('childName')||'小朋友';
   const age=localStorage.getItem('childAge')||'';
@@ -1272,18 +1310,28 @@ function buildSelfIntro(){
     const en=tpl.en.replace('{name}',name).replace('{age}',age);
     const d=document.createElement('div');
     d.className='self-card';
-    d.innerHTML=`<span class="self-emoji">${tpl.e}</span><div class="self-en" style="font-size:clamp(.7rem,2.4vw,.85rem)">${z}</div><div class="self-zh" style="font-size:clamp(.6rem,2vw,.75rem)">${tpl.zy}</div>`;
+    d.innerHTML=`<span class="self-emoji">${tpl.e}</span><div class="self-en" style="font-size:clamp(.68rem,2.3vw,.84rem);line-height:1.3">${z}</div><div class="self-zh" style="font-size:clamp(.58rem,1.9vw,.72rem)">${tpl.zy}</div>`;
     d.addEventListener('click',()=>{
-      document.querySelectorAll('.self-card').forEach(c=>c.classList.remove('playing'));
-      d.classList.add('playing');
-      setTimeout(()=>d.classList.remove('playing'),500);
-      setTimeout(()=>{
-        speakZHQueue([z,tpl.zy],0);
-        setTimeout(()=>speak(en),2000);
-      },1000);
+      d.classList.add('playing');setTimeout(()=>d.classList.remove('playing'),500);
+      openIntroModal({e:tpl.e,z,en,zy:tpl.zy});
     });
     g.appendChild(d);
   });
+}
+function openIntroModal(it){
+  curIntro=it;
+  document.getElementById('intro-m-emoji').textContent=it.e;
+  document.getElementById('intro-m-zh').textContent=it.z;
+  document.getElementById('intro-m-zy').textContent=it.zy;
+  document.getElementById('intro-m-en').textContent=it.en;
+  document.getElementById('intro-modal').classList.add('show');
+  setTimeout(()=>speakIntroCurrent(),1000);
+}
+function closeIntroModal(){document.getElementById('intro-modal').classList.remove('show')}
+function speakIntroCurrent(){
+  if(!curIntro)return;
+  speakZHQueue([curIntro.z,curIntro.zy],0);
+  setTimeout(()=>speak(curIntro.en),2200);
 }
 
 /* ══════════════════════════════════════════
