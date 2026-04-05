@@ -384,7 +384,14 @@ body{
 .splash-sub{color:rgba(255,255,255,.8);font-weight:800;margin-top:8px}
 
 /* ═══════ 認識詞彙 ═══════ */
-.vl-tabs{display:flex;gap:7px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding:0 4px 8px;margin-bottom:10px;width:100%;max-width:100%;scrollbar-width:none}
+.vl-sticky-hdr{
+  position:sticky;top:0;z-index:50;width:100%;max-width:640px;
+  background:linear-gradient(to bottom,rgba(135,206,235,.98) 88%,rgba(135,206,235,0));
+  padding:12px 0 0;display:flex;flex-direction:column;align-items:center;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+}
+#s-vl{padding-top:0;align-items:center}
+.vl-tabs{display:flex;gap:7px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding:0 4px 10px;margin-bottom:0;width:100%;max-width:100%;scrollbar-width:none}
 .vl-tabs::-webkit-scrollbar{display:none}
 .vl-tab{background:#fff;border:3px solid #ddd;border-radius:50px;padding:7px 16px;
   font-family:'Nunito',sans-serif;font-size:clamp(.75rem,2.8vw,.9rem);font-weight:800;
@@ -504,9 +511,11 @@ body{
 
 <!-- ═══════ 認識詞彙 ═══════ -->
 <section class="screen" id="s-vl">
-  <button class="back-btn" onclick="showScreen('s-home')">🏠 回主頁</button>
-  <div class="sec-title">📖 認識詞彙</div>
-  <div class="vl-tabs" id="vl-tabs"></div>
+  <div class="vl-sticky-hdr">
+    <button class="back-btn" style="margin-bottom:6px" onclick="showScreen('s-home')">🏠 回主頁</button>
+    <div class="sec-title" style="margin-bottom:10px">📖 認識詞彙</div>
+    <div class="vl-tabs" id="vl-tabs"></div>
+  </div>
   <div class="vl-grid" id="vl-grid"></div>
 </section>
 
@@ -1145,10 +1154,12 @@ function openSelf(it,card){
 function closeSelfModal(){document.getElementById('self-modal').classList.remove('show')}
 function speakSelfCurrent(){
   if(!curSelf)return;
-  speakZHQueue([curSelf.z, curSelf.z], 0, ()=>{
-    setTimeout(()=>speak(curSelf.w, ()=>{
-      setTimeout(()=>speak(curSelf.w), 350);
-    }), 450);
+  speakZHQueue([curSelf.z], 0, ()=>{
+    setTimeout(()=>speakZHQueue([curSelf.z], 0, ()=>{
+      setTimeout(()=>speak(curSelf.w, ()=>{
+        setTimeout(()=>speak(curSelf.w), 1000);
+      }), 1000);
+    }), 1000);
   });
 }
 
@@ -1381,11 +1392,13 @@ function openVlModal(it){
 function closeVlModal(){document.getElementById('vl-modal').classList.remove('show')}
 function speakVlCurrent(){
   if(!curVl)return;
-  // 中文詞彙 ×2，再英文 ×2，全部用 callback 串接確保順序
-  speakZHQueue([curVl.z, curVl.z], 0, ()=>{
-    setTimeout(()=>speak(curVl.w, ()=>{
-      setTimeout(()=>speak(curVl.w), 350);
-    }), 450);
+  // 中文 → 停1秒 → 中文 → 停1秒 → 英文 → 停1秒 → 英文
+  speakZHQueue([curVl.z], 0, ()=>{
+    setTimeout(()=>speakZHQueue([curVl.z], 0, ()=>{
+      setTimeout(()=>speak(curVl.w, ()=>{
+        setTimeout(()=>speak(curVl.w), 1000);
+      }), 1000);
+    }), 1000);
   });
 }
 
@@ -1437,10 +1450,12 @@ function openIntroModal(it){
 function closeIntroModal(){document.getElementById('intro-modal').classList.remove('show')}
 function speakIntroCurrent(){
   if(!curIntro)return;
-  speakZHQueue([curIntro.z, curIntro.z], 0, ()=>{
-    setTimeout(()=>speak(curIntro.en, ()=>{
-      setTimeout(()=>speak(curIntro.en), 350);
-    }), 450);
+  speakZHQueue([curIntro.z], 0, ()=>{
+    setTimeout(()=>speakZHQueue([curIntro.z], 0, ()=>{
+      setTimeout(()=>speak(curIntro.en, ()=>{
+        setTimeout(()=>speak(curIntro.en), 1000);
+      }), 1000);
+    }), 1000);
   });
 }
 
