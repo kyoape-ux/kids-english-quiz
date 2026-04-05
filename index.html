@@ -406,8 +406,16 @@ body{
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
 }
 #s-vl{padding-top:0;align-items:center}
-.vl-tabs{display:flex;gap:7px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding:0 4px 10px;margin-bottom:0;width:100%;max-width:100%;scrollbar-width:none}
+.vl-tabs-wrap{position:relative;width:100%;display:flex;align-items:center;padding-bottom:10px}
+.vl-tabs{display:flex;gap:7px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding:0 2px 0;margin-bottom:0;flex:1;scrollbar-width:none;scroll-behavior:smooth}
 .vl-tabs::-webkit-scrollbar{display:none}
+.vl-arr{flex-shrink:0;width:30px;height:30px;border:none;border-radius:50%;
+  background:rgba(255,255,255,.92);box-shadow:0 2px 8px rgba(0,0,0,.18);
+  font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:opacity .2s,transform .15s;-webkit-tap-highlight-color:transparent}
+.vl-arr:active{transform:scale(.88)}
+.vl-arr.hidden{opacity:0;pointer-events:none}
+.vl-arr-l{margin-right:4px}.vl-arr-r{margin-left:4px}
 .vl-tab{background:#fff;border:3px solid #ddd;border-radius:50px;padding:7px 16px;
   font-family:'Nunito',sans-serif;font-size:clamp(.75rem,2.8vw,.9rem);font-weight:800;
   cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;color:var(--dark);
@@ -529,7 +537,11 @@ body{
   <div class="vl-sticky-hdr">
     <button class="back-btn" style="margin-bottom:6px" onclick="showScreen('s-home')">🏠 回主頁</button>
     <div class="sec-title" style="margin-bottom:10px">📖 認識詞彙</div>
-    <div class="vl-tabs" id="vl-tabs"></div>
+    <div class="vl-tabs-wrap">
+      <button class="vl-arr vl-arr-l hidden" id="vl-arr-l" onclick="vlScrollTabs(-1)">◀</button>
+      <div class="vl-tabs" id="vl-tabs"></div>
+      <button class="vl-arr vl-arr-r" id="vl-arr-r" onclick="vlScrollTabs(1)">▶</button>
+    </div>
   </div>
   <div class="vl-grid" id="vl-grid"></div>
 </section>
@@ -1484,6 +1496,17 @@ function vmReset(){
    認識詞彙 — 瀏覽模式
 ══════════════════════════════════════════ */
 let vlCurCat='animals';
+function vlUpdateArrows(){
+  const t=document.getElementById('vl-tabs');if(!t)return;
+  const l=document.getElementById('vl-arr-l'),r=document.getElementById('vl-arr-r');
+  if(l)l.classList.toggle('hidden',t.scrollLeft<=4);
+  if(r)r.classList.toggle('hidden',t.scrollLeft>=t.scrollWidth-t.clientWidth-4);
+}
+function vlScrollTabs(dir){
+  const t=document.getElementById('vl-tabs');if(!t)return;
+  t.scrollBy({left:dir*160,behavior:'smooth'});
+  setTimeout(vlUpdateArrows,320);
+}
 function vlInit(catId){
   vlCurCat=catId||'animals';
   const tabs=document.getElementById('vl-tabs');
@@ -1492,9 +1515,14 @@ function vlInit(catId){
     const b=document.createElement('button');
     b.className='vl-tab'+(c.id===vlCurCat?' active':'');
     b.textContent=`${c.icon} ${c.name}`;
-    b.onclick=()=>vlInit(c.id);
+    b.onclick=()=>{vlInit(c.id);setTimeout(()=>b.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}),80)};
     tabs.appendChild(b);
   });
+  // scroll to active tab
+  setTimeout(()=>{const active=tabs.querySelector('.vl-tab.active');if(active)active.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'})},80);
+  // arrow visibility
+  tabs.onscroll=vlUpdateArrows;
+  setTimeout(vlUpdateArrows,120);
   vlRenderGrid();
 }
 let curVl=null;
