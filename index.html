@@ -1846,6 +1846,9 @@ function toggleSyncSection(){
 /* ══════════════════════════════════════════
    INIT
 ══════════════════════════════════════════ */
+// 預設同步點 ID（已建立好，兩台裝置共用）
+const DEFAULT_GIST_ID='b418c51c2e0037d5dcb803ab3b37f526';
+
 window.addEventListener('DOMContentLoaded',()=>{
   vmLoadCustom();loadSelfCustom();loadZhuyinCustom();loadAbcCustom();loadVlCustom();loadVoices();buildSelf();buildZhuyin();buildABC();
   // restore child name/age
@@ -1853,14 +1856,33 @@ window.addEventListener('DOMContentLoaded',()=>{
   if(cn){const el=document.getElementById('child-name');if(el)el.value=cn;}
   if(cne){const el=document.getElementById('child-name-en');if(el)el.value=cne;}
   if(ca){const el=document.getElementById('child-age');if(el)el.value=ca;}
-  // restore gist fields
-  const gt=localStorage.getItem('gistToken');const gid=localStorage.getItem('gistId');
+
+  // 處理 ?token= URL 參數（Mac 一次性設定用）
+  const urlp=new URLSearchParams(location.search);
+  const tkParam=urlp.get('token');
+  if(tkParam){
+    localStorage.setItem('gistToken',tkParam);
+    // 清除 URL 中的 token 避免留在瀏覽器紀錄
+    const cleanUrl=location.origin+location.pathname+(location.hash||'');
+    history.replaceState(null,'',cleanUrl);
+    showFeedback('🔑','Mac 同步設定完成！','#6BCB77');
+  }
+
+  // 自動補入預設同步點 ID（若尚未設定）
+  if(!localStorage.getItem('gistId')){
+    localStorage.setItem('gistId',DEFAULT_GIST_ID);
+  }
+
+  // restore gist fields to UI
+  const gt=localStorage.getItem('gistToken');const gid=localStorage.getItem('gistId')||DEFAULT_GIST_ID;
   if(gt){const el=document.getElementById('gist-token');if(el)el.value=gt;}
   if(gid){const el=document.getElementById('gist-id');if(el)el.value=gid;}
+
   // start auto-polling
   setTimeout(()=>checkAppUpdate(),5000);
   setInterval(checkAppUpdate,5*60*1000);
   startGistPoll();
+
   setTimeout(()=>{document.getElementById('splash').classList.add('hidden');setTimeout(()=>document.getElementById('splash').remove(),600)},1200);
 });
 </script>
