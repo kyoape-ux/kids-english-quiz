@@ -220,6 +220,17 @@ body{
   font-family:'Fredoka One',cursive;font-size:1.2rem;cursor:pointer;
   box-shadow:0 5px 0 #C0392B;-webkit-tap-highlight-color:transparent;width:100%}
 .modal-close:active{transform:translateY(3px);box-shadow:0 2px 0 #C0392B}
+/* ── 自動播放導航列 ── */
+.modal-nav-row{display:flex;gap:7px;margin:8px 0 2px}
+.mnav-btn{flex:1;background:#f0f0f8;color:var(--dark);border:2px solid #e0e0e8;border-radius:14px;
+  padding:9px 4px;font-size:1.1rem;cursor:pointer;font-weight:900;
+  -webkit-tap-highlight-color:transparent;transition:transform .1s}
+.mnav-btn:active{transform:scale(.93)}
+.mnav-ap{flex:2.2;background:var(--mint);color:#fff;border:none;border-radius:14px;
+  padding:9px 6px;font-size:.78rem;cursor:pointer;font-weight:900;letter-spacing:.3px;
+  -webkit-tap-highlight-color:transparent;transition:background .2s,transform .1s}
+.mnav-ap.on{background:var(--coral)}
+.mnav-ap:active{transform:scale(.95)}
 
 /* ═══════ ABC 字母 ═══════ */
 .abc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:11px;
@@ -665,6 +676,11 @@ body{
     <div class="zy-d-word" id="zy-m-word"></div>
     <div class="zy-d-reading" id="zy-m-zy"></div>
     <button class="speak-btn" onclick="speakZyCurrent()" style="width:100%;justify-content:center;margin-bottom:8px">🔊 再聽一次</button>
+    <div class="modal-nav-row">
+      <button class="mnav-btn" onclick="prevZy()">◀</button>
+      <button class="mnav-ap" id="ap-zy" onclick="toggleAutoPlay('zy')">▶ 自動播放</button>
+      <button class="mnav-btn" onclick="nextZy()">▶</button>
+    </div>
     <button class="modal-close" onclick="closeZyModal()">✓ 知道了！</button>
   </div>
 </div>
@@ -676,6 +692,11 @@ body{
     <div class="zy-d-reading" id="self-m-zy"></div>
     <div class="abc-d-word" id="self-m-en"></div>
     <button class="speak-btn" onclick="speakSelfCurrent()" style="width:100%;justify-content:center;margin-bottom:8px">🔊 再聽一次</button>
+    <div class="modal-nav-row">
+      <button class="mnav-btn" onclick="prevSelf()">◀</button>
+      <button class="mnav-ap" id="ap-self" onclick="toggleAutoPlay('self')">▶ 自動播放</button>
+      <button class="mnav-btn" onclick="nextSelf()">▶</button>
+    </div>
     <button class="modal-close" onclick="closeSelfModal()">✓ 知道了！</button>
   </div>
 </div>
@@ -687,6 +708,11 @@ body{
     <div class="abc-d-word" id="abc-m-word"></div>
     <div class="abc-d-zh" id="abc-m-zh"></div>
     <button class="abc-speak" onclick="speakAbc()">🔊 聽英文</button>
+    <div class="modal-nav-row">
+      <button class="mnav-btn" onclick="prevAbc()">◀</button>
+      <button class="mnav-ap" id="ap-abc" onclick="toggleAutoPlay('abc')">▶ 自動播放</button>
+      <button class="mnav-btn" onclick="nextAbc()">▶</button>
+    </div>
     <button class="modal-close" onclick="closeAbcModal()">✓ 知道了！</button>
   </div>
 </div>
@@ -699,6 +725,11 @@ body{
     <div class="zy-d-reading" id="vl-m-zy"></div>
     <div style="font-family:'Fredoka One',cursive;font-size:clamp(1.2rem,5vw,1.8rem);color:var(--dark);margin:6px 0" id="vl-m-en"></div>
     <button class="speak-btn" onclick="speakVlCurrent()" style="width:100%;justify-content:center;margin-bottom:8px">🔊 再聽一次</button>
+    <div class="modal-nav-row">
+      <button class="mnav-btn" onclick="prevVl()">◀</button>
+      <button class="mnav-ap" id="ap-vl" onclick="toggleAutoPlay('vl')">▶ 自動播放</button>
+      <button class="mnav-btn" onclick="nextVl()">▶</button>
+    </div>
     <button class="modal-close" onclick="closeVlModal()">✓ 知道了！</button>
   </div>
 </div>
@@ -711,6 +742,11 @@ body{
     <div class="zy-d-reading" id="intro-m-zy"></div>
     <div style="font-size:clamp(.9rem,3.5vw,1.2rem);color:#999;font-weight:800;margin:6px 0" id="intro-m-en"></div>
     <button class="speak-btn" onclick="speakIntroCurrent()" style="width:100%;justify-content:center;margin-bottom:8px">🔊 再聽一次</button>
+    <div class="modal-nav-row">
+      <button class="mnav-btn" onclick="prevIntro()">◀</button>
+      <button class="mnav-ap" id="ap-intro" onclick="toggleAutoPlay('intro')">▶ 自動播放</button>
+      <button class="mnav-btn" onclick="nextIntro()">▶</button>
+    </div>
     <button class="modal-close" onclick="closeIntroModal()">✓ 知道了！</button>
   </div>
 </div>
@@ -1198,9 +1234,10 @@ function buildSelf(filter){
   if(filter==='自介'){buildSelfIntro();return;}
   const g=document.getElementById('self-grid');g.innerHTML='';
   const list=filter==='all'?SELF.flatMap(s=>s.items):SELF.find(s=>s.cat===filter)?.items||[];
-  list.forEach(it=>{const c=document.createElement('div');c.className='self-card';
+  curSelfList=list;
+  list.forEach((it,i)=>{const c=document.createElement('div');c.className='self-card';
     c.innerHTML=`<span class="self-emoji">${it.e}</span><div class="self-en">${it.w}</div><div class="self-zh">${it.z}</div>`;
-    c.addEventListener('click',()=>openSelf(it,c));g.appendChild(c)});
+    c.addEventListener('click',()=>{curSelfIdx=i;openSelf(it,c)});g.appendChild(c)});
 }
 function filterSelf(cat,btn){document.querySelectorAll('.self-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');buildSelf(cat)}
 function openSelf(it,card){
@@ -1213,13 +1250,13 @@ function openSelf(it,card){
   card.classList.add('playing');setTimeout(()=>card.classList.remove('playing'),500);
   setTimeout(()=>speakSelfCurrent(),1000);
 }
-function closeSelfModal(){document.getElementById('self-modal').classList.remove('show')}
+function closeSelfModal(){document.getElementById('self-modal').classList.remove('show');if(autoPlaySec==='self'){autoPlaySec=null;clearTimeout(apTimer);speechSynthesis.cancel();updateAllApBtns();}}
 function speakSelfCurrent(){
   if(!curSelf)return;
   speakZHQueue([curSelf.z], 0, ()=>{
     setTimeout(()=>speakZHQueue([curSelf.z], 0, ()=>{
       setTimeout(()=>speak(curSelf.w, ()=>{
-        setTimeout(()=>speak(curSelf.w), 1000);
+        setTimeout(()=>speak(curSelf.w, ()=>scheduleNext('self')), 1000);
       }), 1000);
     }), 1000);
   });
@@ -1232,9 +1269,10 @@ function speakSelfCurrent(){
 function buildZhuyin(filter){
   filter=filter||'聲母';const g=document.getElementById('zy-grid');g.innerHTML='';
   const list=filter==='all'?ZHUYIN:ZHUYIN.filter(z=>z.cat===filter);
-  list.forEach(z=>{const c=document.createElement('div');c.className='zy-card';
+  curZyList=list;
+  list.forEach((z,i)=>{const c=document.createElement('div');c.className='zy-card';
     c.innerHTML=`<span class="zy-sym">${z.sym}</span><div class="zy-type">${z.cat}</div><div class="zy-example">${z.word}</div><div class="zy-reading">${z.zy}</div>`;
-    c.addEventListener('click',()=>openZy(z,c));g.appendChild(c)});
+    c.addEventListener('click',()=>{curZyIdx=i;openZy(z,c)});g.appendChild(c)});
 }
 function filterZy(cat,btn){document.querySelectorAll('.zy-cat-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');buildZhuyin(cat)}
 function openZy(z,card){
@@ -1247,12 +1285,11 @@ function openZy(z,card){
   card.classList.add('playing');setTimeout(()=>card.classList.remove('playing'),500);
   setTimeout(()=>speakZyCurrent(),1000);
 }
-function closeZyModal(){document.getElementById('zy-modal').classList.remove('show')}
+function closeZyModal(){document.getElementById('zy-modal').classList.remove('show');if(autoPlaySec==='zy'){autoPlaySec=null;clearTimeout(apTimer);speechSynthesis.cancel();updateAllApBtns();}}
 /* 核心：先唸注音符號 → 再唸注音讀法 → 再唸詞彙 */
 function speakZyCurrent(){
   if(!curZy)return;
-  // 例：「ㄊ」→「ㄊㄞˋ ㄧㄤˊ」→「太陽」
-  speakZHQueue([curZy.sym, curZy.zy, curZy.word]);
+  speakZHQueue([curZy.sym, curZy.zy, curZy.word], 0, ()=>scheduleNext('zy'));
 }
 
 /* ══════════════════════════════════════════
@@ -1260,15 +1297,19 @@ function speakZyCurrent(){
 ══════════════════════════════════════════ */
 const LC=['#FF6B6B','#FF9A3C','#E6C800','#6BCB77','#4FC3F7','#B388FF','#FF80AB'];
 function buildABC(){const g=document.getElementById('abc-grid');g.innerHTML='';
+  curAbcList=ABC;
   ABC.forEach((a,i)=>{const c=document.createElement('div');c.className='abc-card';const col=LC[i%7];
     c.innerHTML=`<span class="abc-letter" style="color:${col}">${a.L}</span><div class="abc-lower">${a.L.toLowerCase()}</div><span class="abc-emoji-s">${a.emoji}</span><div class="abc-word">${a.word}</div><div class="abc-zh-s">${a.zh}</div>`;
-    c.addEventListener('click',()=>openAbc(a,c,col));g.appendChild(c)})}
+    c.addEventListener('click',()=>{curAbcIdx=i;openAbc(a,c,col)});g.appendChild(c)})}
 function openAbc(a,card,col){curAbc=a;document.getElementById('abc-m-up').textContent=a.L;document.getElementById('abc-m-up').style.color=col;
   document.getElementById('abc-m-dn').textContent=a.L.toLowerCase();document.getElementById('abc-m-emoji').textContent=a.emoji;
   document.getElementById('abc-m-word').textContent=a.word;document.getElementById('abc-m-zh').textContent=a.zh;
-  document.getElementById('abc-modal').classList.add('show');card.classList.add('playing');setTimeout(()=>card.classList.remove('playing'),500);setTimeout(()=>speak(a.L+'... '+a.word),1000)}
-function closeAbcModal(){document.getElementById('abc-modal').classList.remove('show')}
-function speakAbc(){if(curAbc)speak(curAbc.L+'... '+curAbc.word)}
+  document.getElementById('abc-modal').classList.add('show');
+  if(card){card.classList.add('playing');setTimeout(()=>card.classList.remove('playing'),500);}
+  setTimeout(()=>speakAbcFull(),1000);
+}
+function closeAbcModal(){document.getElementById('abc-modal').classList.remove('show');if(autoPlaySec==='abc'){autoPlaySec=null;clearTimeout(apTimer);speechSynthesis.cancel();updateAllApBtns();}}
+function speakAbc(){if(curAbc)speakAbcFull();}
 
 /* ══════════════════════════════════════════
    DONE / FEEDBACK / CONFETTI
@@ -1573,11 +1614,13 @@ function vlRenderGrid(){
   g.innerHTML='';
   const cat=VL_CATS.find(c=>c.id===vlCurCat);
   if(!cat)return;
-  cat.items.forEach(it=>{
+  curVlList=cat.items;
+  cat.items.forEach((it,i)=>{
     const d=document.createElement('div');
     d.className='vl-card';
     d.innerHTML=`<span class="vl-emoji">${it.e}</span><div class="vl-zh">${it.z}</div><div class="vl-zy">${it.zy}</div><div class="vl-en">${it.w}</div>`;
     d.addEventListener('click',()=>{
+      curVlIdx=i;
       d.classList.add('playing');setTimeout(()=>d.classList.remove('playing'),500);
       openVlModal(it);
     });
@@ -1593,14 +1636,13 @@ function openVlModal(it){
   document.getElementById('vl-modal').classList.add('show');
   setTimeout(()=>speakVlCurrent(),1000);
 }
-function closeVlModal(){document.getElementById('vl-modal').classList.remove('show')}
+function closeVlModal(){document.getElementById('vl-modal').classList.remove('show');if(autoPlaySec==='vl'){autoPlaySec=null;clearTimeout(apTimer);speechSynthesis.cancel();updateAllApBtns();}}
 function speakVlCurrent(){
   if(!curVl)return;
-  // 中文 → 停1秒 → 中文 → 停1秒 → 英文 → 停1秒 → 英文
   speakZHQueue([curVl.z], 0, ()=>{
     setTimeout(()=>speakZHQueue([curVl.z], 0, ()=>{
       setTimeout(()=>speak(curVl.w, ()=>{
-        setTimeout(()=>speak(curVl.w), 1000);
+        setTimeout(()=>speak(curVl.w, ()=>scheduleNext('vl')), 1000);
       }), 1000);
     }), 1000);
   });
@@ -1629,15 +1671,19 @@ function buildSelfIntro(){
   const age=localStorage.getItem('childAge')||'';
   const g=document.getElementById('self-grid');
   g.innerHTML='';
-  SELF_INTRO_TPL.forEach(tpl=>{
+  curIntroList=[];
+  SELF_INTRO_TPL.forEach((tpl,i)=>{
     const z=tpl.z.replace('{name}',name).replace('{age}',age);
     const en=tpl.en.replace('{name}',nameEN).replace('{age}',age);
+    const item={e:tpl.e,z,en,zy:tpl.zy};
+    curIntroList.push(item);
     const d=document.createElement('div');
     d.className='self-card';
     d.innerHTML=`<span class="self-emoji">${tpl.e}</span><div class="self-en" style="font-size:clamp(.68rem,2.3vw,.84rem);line-height:1.3">${z}</div><div class="self-zh" style="font-size:clamp(.58rem,1.9vw,.72rem)">${tpl.zy}</div>`;
     d.addEventListener('click',()=>{
+      curIntroIdx=i;
       d.classList.add('playing');setTimeout(()=>d.classList.remove('playing'),500);
-      openIntroModal({e:tpl.e,z,en,zy:tpl.zy});
+      openIntroModal(item);
     });
     g.appendChild(d);
   });
@@ -1651,16 +1697,185 @@ function openIntroModal(it){
   document.getElementById('intro-modal').classList.add('show');
   setTimeout(()=>speakIntroCurrent(),1000);
 }
-function closeIntroModal(){document.getElementById('intro-modal').classList.remove('show')}
+function closeIntroModal(){document.getElementById('intro-modal').classList.remove('show');if(autoPlaySec==='intro'){autoPlaySec=null;clearTimeout(apTimer);speechSynthesis.cancel();updateAllApBtns();}}
 function speakIntroCurrent(){
   if(!curIntro)return;
   speakZHQueue([curIntro.z], 0, ()=>{
     setTimeout(()=>speakZHQueue([curIntro.z], 0, ()=>{
       setTimeout(()=>speak(curIntro.en, ()=>{
-        setTimeout(()=>speak(curIntro.en), 1000);
+        setTimeout(()=>speak(curIntro.en, ()=>scheduleNext('intro')), 1000);
       }), 1000);
     }), 1000);
   });
+}
+
+/* ══════════════════════════════════════════
+   自動播放 / 前後導航
+══════════════════════════════════════════ */
+let autoPlaySec = null;   // 目前自動播放的 section ('zy'|'abc'|'vl'|'self'|'intro')
+let apTimer = null;
+
+// 每個 section 的當前播放清單與索引
+let curZyList = [];   let curZyIdx = 0;
+let curAbcList = [];  let curAbcIdx = 0;
+let curVlList = [];   let curVlIdx = 0;
+let curSelfList = []; let curSelfIdx = 0;
+let curIntroList = [];let curIntroIdx = 0;
+
+function toggleAutoPlay(sec){
+  if(autoPlaySec===sec){
+    // 關閉
+    autoPlaySec=null;clearTimeout(apTimer);
+  }else{
+    autoPlaySec=sec;
+    // 立刻播放當前（取消說話後重新播）
+    speechSynthesis.cancel();
+    setTimeout(()=>triggerSpeak(sec),200);
+  }
+  updateAllApBtns();
+}
+function updateAllApBtns(){
+  ['zy','abc','vl','self','intro'].forEach(s=>{
+    const btn=document.getElementById('ap-'+s);
+    if(!btn)return;
+    const on=autoPlaySec===s;
+    btn.textContent=on?'⏸ 暫停':'▶ 自動播放';
+    btn.classList.toggle('on',on);
+  });
+}
+function triggerSpeak(sec){
+  if(sec==='zy')speakZyCurrent();
+  else if(sec==='abc')speakAbcFull();
+  else if(sec==='vl')speakVlCurrent();
+  else if(sec==='self')speakSelfCurrent();
+  else if(sec==='intro')speakIntroCurrent();
+}
+function scheduleNext(sec){
+  if(autoPlaySec!==sec)return;
+  clearTimeout(apTimer);
+  apTimer=setTimeout(()=>{
+    if(autoPlaySec!==sec)return;
+    if(sec==='zy')nextZy(true);
+    else if(sec==='abc')nextAbc(true);
+    else if(sec==='vl')nextVl(true);
+    else if(sec==='self')nextSelf(true);
+    else if(sec==='intro')nextIntro(true);
+  },1400);
+}
+
+/* ── 注音 ── */
+function nextZy(auto){
+  if(!curZyList.length)return;
+  curZyIdx=(curZyIdx+1)%curZyList.length;
+  openZyByIdx();
+}
+function prevZy(){
+  if(!curZyList.length)return;
+  curZyIdx=(curZyIdx-1+curZyList.length)%curZyList.length;
+  openZyByIdx();
+}
+function openZyByIdx(){
+  const z=curZyList[curZyIdx];if(!z)return;
+  curZy=z;
+  document.getElementById('zy-m-sym').textContent=z.sym;
+  document.getElementById('zy-m-emoji').textContent=z.emoji;
+  document.getElementById('zy-m-word').textContent=z.word;
+  document.getElementById('zy-m-zy').textContent=z.zy;
+  document.getElementById('zy-modal').classList.add('show');
+  speechSynthesis.cancel();
+  setTimeout(()=>speakZyCurrent(),600);
+}
+
+/* ── ABC ── */
+function nextAbc(auto){
+  if(!curAbcList.length)return;
+  curAbcIdx=(curAbcIdx+1)%curAbcList.length;
+  openAbcByIdx();
+}
+function prevAbc(){
+  if(!curAbcList.length)return;
+  curAbcIdx=(curAbcIdx-1+curAbcList.length)%curAbcList.length;
+  openAbcByIdx();
+}
+function openAbcByIdx(){
+  const a=curAbcList[curAbcIdx];if(!a)return;
+  curAbc=a;const col=LC[curAbcIdx%7];
+  document.getElementById('abc-m-up').textContent=a.L;document.getElementById('abc-m-up').style.color=col;
+  document.getElementById('abc-m-dn').textContent=a.L.toLowerCase();
+  document.getElementById('abc-m-emoji').textContent=a.emoji;
+  document.getElementById('abc-m-word').textContent=a.word;
+  document.getElementById('abc-m-zh').textContent=a.zh;
+  document.getElementById('abc-modal').classList.add('show');
+  speechSynthesis.cancel();
+  setTimeout(()=>speakAbcFull(),600);
+}
+function speakAbcFull(){
+  if(!curAbc)return;
+  speak(curAbc.L+'... '+curAbc.word, ()=>{
+    setTimeout(()=>speak(curAbc.L+'... '+curAbc.word, ()=>scheduleNext('abc')),1000);
+  });
+}
+
+/* ── 認識詞彙 ── */
+function nextVl(auto){
+  if(!curVlList.length)return;
+  curVlIdx=(curVlIdx+1)%curVlList.length;
+  openVlByIdx();
+}
+function prevVl(){
+  if(!curVlList.length)return;
+  curVlIdx=(curVlIdx-1+curVlList.length)%curVlList.length;
+  openVlByIdx();
+}
+function openVlByIdx(){
+  const it=curVlList[curVlIdx];if(!it)return;
+  curVl=it;
+  document.getElementById('vl-m-emoji').textContent=it.e;
+  document.getElementById('vl-m-zh').textContent=it.z;
+  document.getElementById('vl-m-zy').textContent=it.zy;
+  document.getElementById('vl-m-en').textContent=it.w;
+  document.getElementById('vl-modal').classList.add('show');
+  speechSynthesis.cancel();
+  setTimeout(()=>speakVlCurrent(),600);
+}
+
+/* ── 認識自己詞彙 ── */
+function nextSelf(auto){
+  if(!curSelfList.length)return;
+  curSelfIdx=(curSelfIdx+1)%curSelfList.length;
+  openSelfByIdx();
+}
+function prevSelf(){
+  if(!curSelfList.length)return;
+  curSelfIdx=(curSelfIdx-1+curSelfList.length)%curSelfList.length;
+  openSelfByIdx();
+}
+function openSelfByIdx(){
+  const it=curSelfList[curSelfIdx];if(!it)return;
+  curSelf=it;
+  document.getElementById('self-m-emoji').textContent=it.e;
+  document.getElementById('self-m-zh').textContent=it.z;
+  document.getElementById('self-m-zy').textContent=it.zy;
+  document.getElementById('self-m-en').textContent=it.w;
+  document.getElementById('self-modal').classList.add('show');
+  speechSynthesis.cancel();
+  setTimeout(()=>speakSelfCurrent(),600);
+}
+
+/* ── 自我介紹 ── */
+function nextIntro(auto){
+  if(!curIntroList.length)return;
+  curIntroIdx=(curIntroIdx+1)%curIntroList.length;
+  openIntroByIdx();
+}
+function prevIntro(){
+  if(!curIntroList.length)return;
+  curIntroIdx=(curIntroIdx-1+curIntroList.length)%curIntroList.length;
+  openIntroByIdx();
+}
+function openIntroByIdx(){
+  const it=curIntroList[curIntroIdx];if(!it)return;
+  openIntroModal(it);
 }
 
 /* ══════════════════════════════════════════
